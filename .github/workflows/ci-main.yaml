@@ -6,23 +6,25 @@ on:
       - main
 
 env:
-  MIGRATION_PAT: ${{ secrets.MIGRATION_PAT }}  
+  commit: ${{ github.sha }}
 
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]
-
+    strategy:
+      matrix:
+        env: [dev]
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install Flyway
+    - name: Install Flyway | ${{matrix.env}}
       run: |
         wget -qO- https://download.red-gate.com/maven/release/org/flywaydb/enterprise/flyway-commandline/9.22.3/flyway-commandline-9.22.3-linux-x64.tar.gz | 
         tar -xvz && sudo ln -s `pwd`/flyway-9.22.3/flyway /usr/local/bin 
 
     - name: Test Database Connection
       run: |
-        flyway info -url=${{DB_URL}} -user=${{DB_USERNAME}} -password=${{DB_PASSWORD}} 
+        flyway info -url=${{DB_URL}} -user=${{DB_USERNAME}} -password=${{DB_PASS}} 
 
   rollback:
     runs-on: [self-hosted, uship-linux]
