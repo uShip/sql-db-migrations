@@ -26,6 +26,7 @@ jobs:
 
     - name: Test Database Connection
       run: |
+        apt-get install iputils-ping
         ping 10.95.195.203
         
       # flyway info -url=${{secrets.DB_URL}} -user=${{secrets.DB_USERNAME}} -password=${{secrets.DB_PASS}} 
