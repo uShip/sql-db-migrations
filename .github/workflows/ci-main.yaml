@@ -41,9 +41,9 @@ jobs:
     - name: Test Database Connection with Flyway Info
       run: flyway info
       env:
-        FLYWAY_URL: jdbc:sqlserver://${{secrets.DB_SERVER}}:1433;databaseName=${{secrets.DB_NAME}}
-        FLYWAY_USER: ${{secrets.DB_USER}}
-        FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
+        FLYWAY_URL: "jdbc:sqlserver://${{secrets.DB_SERVER}}:1433;databaseName=${{secrets.DB_NAME}}"
+        FLYWAY_USER: "${{secrets.DB_USER}}"
+        FLYWAY_PASSWORD: "${{secrets.DB_PASS}}"
 
 
     # - name: Create Flyway Configuration
