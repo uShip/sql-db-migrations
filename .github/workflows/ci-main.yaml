@@ -40,9 +40,10 @@ jobs:
       
     - name: Test Database Connection with Flyway Info
       run: |
-        export FLYWAY_URL="jdbc:sqlserver://${{secrets.DB_SERVER}}:1433;databaseName=${{secrets.DB_NAME}}"
-        export FLYWAY_USER="${{secrets.DB_USER}}"
-        export FLYWAY_PASSWORD="${{secrets.DB_PASS}}"
+        echo ${{secrets.DB_SERVER}}
+        export FLYWAY_URL="jdbc:sqlserver://${{secrets.DB_SERVER}}:1433;databaseName=${{ secrets.DB_NAME }}"
+        export FLYWAY_USER="${{ secrets.DB_USER }}"
+        export FLYWAY_PASSWORD="${{ secrets.DB_PASS }}"
         flyway info
 
 
