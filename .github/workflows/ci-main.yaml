@@ -20,7 +20,9 @@ jobs:
 
     - name: Test Database Connection
       run: |
-        lsb_release -a
+        sudo apt-get update
+        sudo apt-get install mssql-tools
+
 
   # rollback:
   #   runs-on: [self-hosted, uship-linux]
