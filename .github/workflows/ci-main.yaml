@@ -20,10 +20,7 @@ jobs:
 
     - name: Test Database Connection
       run: |
-        curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-        sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/prod.list)"
-        sudo apt-get install mssql-tools
-        sqlcmd -S ${{secrets.DB_SERVER}} -U ${{secrets.DB_USER}} -P ${{secrets.DB_PASS}} -d ${{secrets.DB_NAME}} -Q "SELECT 1"
+        lsb_release -a
 
   # rollback:
   #   runs-on: [self-hosted, uship-linux]
