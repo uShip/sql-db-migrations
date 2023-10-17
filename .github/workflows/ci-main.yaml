@@ -43,11 +43,12 @@ jobs:
         echo "flyway.url=jdbc:sqlserver://${{secrets.DB_SERVER}}:1433;databaseName=${{secrets.DB_NAME}}" > flyway.conf
         echo "flyway.user=${{secrets.DB_USER}}" >> flyway.conf
         echo "flyway.password=${{secrets.DB_PASS}}" >> flyway.conf
+        cat flyway.conf
 
     - name: Run Flyway Info
-      run: flyway info
+      run: /usr/local/bin/flyway info
       env:
-        FLYWAY_CONFIG_FILE: /usr/local/bin/flyway/flyway.conf
+        FLYWAY_CONFIG_FILE: flyway.conf
 
   # rollback:
   #   runs-on: [self-hosted, uship-linux]
