@@ -37,13 +37,14 @@ jobs:
         curl -o /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.0.0/flyway-commandline-8.0.0-linux-x64.tar.gz
         tar -xzf /tmp/flyway.tar.gz -C /tmp
         sudo mv /tmp/flyway-8.0.0/flyway /usr/local/bin/
-      
+    
+
     - name: Test Database Connection with Flyway Info
       run: |
         echo ${{secrets.DB_SERVER}}
-        export FLYWAY_URL="jdbc:sqlserver://${{secrets.DB_SERVER}}:1433;databaseName=${{ secrets.DB_NAME }}"
-        export FLYWAY_USER="${{ secrets.DB_USER }}"
-        export FLYWAY_PASSWORD="${{ secrets.DB_PASS }}"
+        export FLYWAY_URL="${{secrets.DB_HOSTNAME}}"
+        export FLYWAY_USER="${{secrets.DB_USER}}"
+        export FLYWAY_PASSWORD="${{secrets.DB_PASS}}"
         flyway info
 
 
