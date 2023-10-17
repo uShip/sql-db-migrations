@@ -40,11 +40,12 @@ jobs:
     
 
     - name: Test Database Connection with Flyway Info
+      env: 
+        FLYWAY_URL: ${{secrets.DB_HOSTNAME}}
+        FLYWAY_USER: ${{secrets.DB_USER}}
+        FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
       run: |
-        echo ${{secrets.DB_SERVER}}
-        export FLYWAY_URL="${{secrets.DB_HOSTNAME}}"
-        export FLYWAY_USER="${{secrets.DB_USER}}"
-        export FLYWAY_PASSWORD="${{secrets.DB_PASS}}"
+        echo "$FLYWAY_URL"
         flyway info
 
 
