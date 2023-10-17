@@ -27,28 +27,24 @@ jobs:
     #     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
     #     source ~/.bashrc
     #     sqlcmd -S ${{secrets.DB_SERVER}} -U ${{secrets.DB_USER}} -P ${{secrets.DB_PASS}} -d ${{secrets.DB_NAME}} -Q "SELECT 1"
-    - name: Install Java
-      run: | 
-        sudo apt-get update
-        sudo apt-get install -y openjdk-11-jre
+    - name: Set up Java
+      uses: actions/setup-java@v2
+      with:
+        java-version: 11
 
-    - name: Install Flyway
+    - name: Set up Flyway
       run: |
         curl -o /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.0.0/flyway-commandline-8.0.0-linux-x64.tar.gz
         tar -xzf /tmp/flyway.tar.gz -C /tmp
         sudo mv /tmp/flyway-8.0.0/flyway /usr/local/bin/
     
-
     - name: Test Database Connection with Flyway Info
       env: 
         FLYWAY_URL: ${{secrets.DB_HOSTNAME}}
         FLYWAY_USER: ${{secrets.DB_USER}}
         FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
       run: |
-        echo "$FLYWAY_URL"
         flyway info
-
-
 
     # - name: Create Flyway Configuration
     #   run: |
