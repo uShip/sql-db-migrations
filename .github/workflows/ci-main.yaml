@@ -21,7 +21,7 @@ jobs:
     - name: Test Database Connection
       run: |
         curl https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-archive-keyring.gpg
-        echo "deb [signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/ubuntu/18.04/prod bionic main" | sudo tee /etc/apt/sources.list.d/mssql-release.list
+        echo "deb [signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/ubuntu/22.04/prod/dists/jammy bionic main" | sudo tee /etc/apt/sources.list.d/mssql-release.list
 
         sudo apt-get update
         sudo apt-get install mssql-tools
