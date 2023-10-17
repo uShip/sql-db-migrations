@@ -38,17 +38,25 @@ jobs:
         tar -xzf /tmp/flyway.tar.gz -C /tmp
         sudo mv /tmp/flyway-8.0.0/flyway /usr/local/bin/
       
-    - name: Create Flyway Configuration
-      run: |
-        echo "flyway.url=jdbc:sqlserver://${{secrets.DB_SERVER}}:1433;databaseName=${{secrets.DB_NAME}}" > flyway.conf
-        echo "flyway.user=${{secrets.DB_USER}}" >> flyway.conf
-        echo "flyway.password=${{secrets.DB_PASS}}" >> flyway.conf
-        cat flyway.conf
-
-    - name: Run Flyway Info
-      run: /usr/local/bin/flyway info
+    - name: Test Database Connection with Flyway Info
+      run: flyway info
       env:
-        FLYWAY_CONFIG_FILE: flyway.conf
+        FLYWAY_URL: jdbc:sqlserver://${{secrets.DB_SERVER}}:1433;databaseName=${{secrets.DB_NAME}}
+        FLYWAY_USER: ${{secrets.DB_USER}}
+        FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
+
+
+    # - name: Create Flyway Configuration
+    #   run: |
+    #     echo "flyway.url=jdbc:sqlserver://${{secrets.DB_SERVER}}:1433;databaseName=${{secrets.DB_NAME}}" > flyway.conf
+    #     echo "flyway.user=${{secrets.DB_USER}}" >> flyway.conf
+    #     echo "flyway.password=${{secrets.DB_PASS}}" >> flyway.conf
+    #     cat flyway.conf
+
+    # - name: Run Flyway Info
+    #   run: /usr/local/bin/flyway info
+    #   env:
+    #     FLYWAY_CONFIG_FILE: flyway.conf
 
   # rollback:
   #   runs-on: [self-hosted, uship-linux]
