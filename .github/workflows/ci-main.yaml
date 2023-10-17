@@ -18,16 +18,32 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Test Database Connection
+    # - name: Test Database Connection
+    #   run: |
+    #     sudo curl https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
+    #     sudo curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+    #     sudo apt-get update  
+    #     sudo ACCEPT_EULA=Y apt-get install -y mssql-tools
+    #     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+    #     source ~/.bashrc
+    #     sqlcmd -S ${{secrets.DB_SERVER}} -U ${{secrets.DB_USER}} -P ${{secrets.DB_PASS}} -d ${{secrets.DB_NAME}} -Q "SELECT 1"
+    - name: Install Flyway
       run: |
-        sudo curl https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
-        sudo curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
-        sudo apt-get update  
-        sudo ACCEPT_EULA=Y apt-get install -y mssql-tools
-        echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
-        source ~/.bashrc
-        sqlcmd -S ${{secrets.DB_SERVER}} -U ${{secrets.DB_USER}} -P ${{secrets.DB_PASS}} -d ${{secrets.DB_NAME}} -Q "SELECT 1"
-        
+        curl -o /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.0.0/flyway-commandline-8.0.0-linux-x64.tar.gz
+        tar -xzf /tmp/flyway.tar.gz -C /tmp
+        sudo mv /tmp/flyway-8.0.0/flyway /usr/local/bin/
+      
+    - name: Create Flyway Configuration
+      run: |
+        echo "flyway.url=jdbc:mysql://${{secrets.DB_SERVER}}:1433/${{secrets.DB_NAME}}" > flyway.conf
+        echo "flyway.user=${{secrets.DB_USER}}" >> flyway.conf
+        echo "flyway.password=${{secrets.DB_PASS}}" >> flyway.conf
+
+    - name: Run Flyway Info
+      run: flyway info
+      env:
+        FLYWAY_CONFIG_FILE: flyway.conf
+
   # rollback:
   #   runs-on: [self-hosted, uship-linux]
 
