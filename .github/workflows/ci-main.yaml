@@ -20,11 +20,11 @@ jobs:
 
     - name: Test Database Connection
       run: |
-        curl https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-archive-keyring.gpg
-        echo "deb [signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/ubuntu/22.04/prod/dists/jammy bionic main" | sudo tee /etc/apt/sources.list.d/mssql-release.list
-
-        sudo apt-get update
-        sudo apt-get install mssql-tools
+        curl https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
+        curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+        sudo apt-get update  
+        sudo apt-get install mssql-tools18
+        echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bash_profile
 
 
   # rollback:
