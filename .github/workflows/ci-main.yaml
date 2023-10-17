@@ -18,25 +18,17 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    # - name: Install Flyway | ${{matrix.env}}
-    #   run: |
-    #     ssh -i 
-    #     wget -qO- https://download.red-gate.com/maven/release/org/flywaydb/enterprise/flyway-commandline/9.22.3/flyway-commandline-9.22.3-linux-x64.tar.gz | 
-    #     tar -xvz && sudo ln -s `pwd`/flyway-9.22.3/flyway /usr/local/bin 
-
     - name: Test Database Connection
       run: |
-        sudo apt-get install iputils-ping
-        ping 10.95.195.203
-        
-      # flyway info -url=${{secrets.DB_URL}} -user=${{secrets.DB_USERNAME}} -password=${{secrets.DB_PASS}} 
+        sudo apt install mssql-tools
+        sqlcmd -S ${{secrets.DB_SERVER}} -U ${{secrets.DB_USER}} -P ${{secrets.DB_PASS}} -d ${{secrets.DB_NAME}} -Q "SELECT 1"
 
-  rollback:
-    runs-on: [self-hosted, uship-linux]
+  # rollback:
+  #   runs-on: [self-hosted, uship-linux]
 
-    steps:
-    - uses: actions/checkout@v3
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    - name: Rollback changes
-      run: |
-        # 
+  #   - name: Rollback changes
+  #     run: |
+  #       # 
