@@ -20,7 +20,7 @@ jobs:
 
     - name: Test Database Connection
       run: |
-        sudo apt install mssql-tools
+        sudo apt-get install mssql-tools
         sqlcmd -S ${{secrets.DB_SERVER}} -U ${{secrets.DB_USER}} -P ${{secrets.DB_PASS}} -d ${{secrets.DB_NAME}} -Q "SELECT 1"
 
   # rollback:
