@@ -39,11 +39,12 @@ jobs:
         sudo mv /tmp/flyway-8.0.0/flyway /usr/local/bin/
       
     - name: Test Database Connection with Flyway Info
-      run: flyway info
-      env:
-        FLYWAY_URL: "jdbc:sqlserver://${{secrets.DB_SERVER}}:1433;databaseName=${{secrets.DB_NAME}}"
-        FLYWAY_USER: "${{secrets.DB_USER}}"
-        FLYWAY_PASSWORD: "${{secrets.DB_PASS}}"
+      run: |
+        export FLYWAY_URL="jdbc:sqlserver://${{secrets.DB_SERVER}}:1433;databaseName=${{secrets.DB_NAME}}"
+        export FLYWAY_USER="${{secrets.DB_USER}}"
+        export FLYWAY_PASSWORD="${{secrets.DB_PASS}}"
+        flyway info
+
 
 
     # - name: Create Flyway Configuration
