@@ -30,6 +30,7 @@ jobs:
         tar -xzf /tmp/flyway.tar.gz -C /tmp
         sudo mv /tmp/flyway-9.22.3 /opt/flyway
         sudo ln -s /opt/flyway/flyway /usr/local/bin/flyway
+        sudo apt-get install telnet
     
     - name: Test Database Connection with Flyway Info
       env: 
@@ -38,7 +39,6 @@ jobs:
         FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
         HOST: ${{secrets.HOSTNAME}}
       run: |
-        sudo apt-get install telnet
         telnet ${{env.HOST}}
 
   # rollback:
