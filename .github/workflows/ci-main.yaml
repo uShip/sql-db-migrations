@@ -32,12 +32,6 @@ jobs:
       with:
         java-version: 11
         distribution: 'adopt'
-        jre: true
-
-    - name: Create Symbolic Link for Java
-      run: |
-        JAVA_PATH=$(which java)
-        sudo ln -sf $JAVA_PATH /usr/bin/java
 
     - name: Set up Flyway
       run: |
