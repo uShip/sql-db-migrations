@@ -41,6 +41,7 @@ jobs:
         FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
         HOST: ${{secrets.HOSTNAME}}
       run: |
+        ipconfig
         ping -w 10 $HOST
 
   # rollback:
