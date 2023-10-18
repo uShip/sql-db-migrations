@@ -36,10 +36,10 @@ jobs:
         FLYWAY_URL: ${{secrets.DB_HOSTNAME}}
         FLYWAY_USER: ${{secrets.DB_USER}}
         FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
+        HOST: ${{secrets.HOSTNAME}}
       run: |
-        sudo -E flyway info
         sudo apt-get install telnet
-        telnet 10.95.195.203 1433
+        telnet ${{env.HOSTNAME}}
 
   # rollback:
   #   runs-on: [self-hosted, uship-linux]
