@@ -26,9 +26,9 @@ jobs:
 
     - name: Set up Flyway
       run: |
-        curl -o /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.0.0/flyway-commandline-8.0.0-linux-x64.tar.gz
+        curl -o /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.22.3/flyway-commandline-9.22.3-linux-x64.tar.gz
         tar -xzf /tmp/flyway.tar.gz -C /tmp
-        sudo mv /tmp/flyway-8.0.0 /opt/flyway
+        sudo mv /tmp/flyway-9.22.3 /opt/flyway
         sudo ln -s /opt/flyway/flyway /usr/local/bin/flyway
     
     - name: Test Database Connection with Flyway Info
@@ -38,6 +38,8 @@ jobs:
         FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
       run: |
         sudo -E flyway info
+        sudo apt-get install telnet
+        telnet 10.95.195.203 1433
 
   # rollback:
   #   runs-on: [self-hosted, uship-linux]
