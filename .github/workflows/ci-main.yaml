@@ -41,7 +41,7 @@ jobs:
         FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
         HOST: ${{secrets.HOSTNAME}}
       run: |
-        ping $HOST
+        ping -w 10 $HOST
 
   # rollback:
   #   runs-on: [self-hosted, uship-linux]
