@@ -39,7 +39,7 @@ jobs:
         HOST: ${{secrets.HOSTNAME}}
       run: |
         sudo apt-get install telnet
-        telnet ${{env.HOSTNAME}}
+        telnet ${{env.HOST}}
 
   # rollback:
   #   runs-on: [self-hosted, uship-linux]
