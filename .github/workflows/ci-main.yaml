@@ -46,7 +46,7 @@ jobs:
         FLYWAY_USER: ${{secrets.DB_USER}}
         FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
       run: |
-        flyway info
+        sudo flyway info
 
     # - name: Create Flyway Configuration
     #   run: |
