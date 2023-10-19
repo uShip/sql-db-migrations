@@ -1,10 +1,12 @@
 name: ci-main
 
 on:
-  push:
-    branches:
-      - main
-      - testing-connection
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to (prod, dev, qa, sandbox)'
+        required: true
+        default: 'dev'
 
 env:
   commit: ${{ github.sha }}
@@ -12,11 +14,22 @@ env:
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]
-    strategy:
-      matrix:
-        env: [dev]
-
+    environment: 
+      name: ${{ github.event.inputs.environment }}
     steps:
+    - name: Validate environment
+      run: |
+        echo "Selected environment: ${{ github.event.inputs.environment }}"
+        case "${{ github.event.inputs.environment }}" in
+          prod|dev|qa|sandbox) # allowed values
+            echo "Proceeding with the deployment to ${{ github.event.inputs.environment }} environment."
+            ;;
+          *)
+            echo "Error: Invalid environment selected. Allowed values are prod, dev, qa, or sandbox."
+            exit 1
+            ;;
+        esac
+
     - uses: actions/checkout@v3
 
     - name: Set up Java
@@ -34,18 +47,8 @@ jobs:
     
     - name: Test Database Connection with Flyway Info
       env: 
-        FLYWAY_URL: ${{secrets.DB_HOSTNAME}}
-        FLYWAY_USER: ${{secrets.DB_USER}}
-        FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
+        FLYWAY_URL: ${{ secrets.DB_HOSTNAME }}
+        FLYWAY_USER: ${{ secrets.DB_USER }}
+        FLYWAY_PASSWORD: ${{ secrets.DB_PASS }}
       run: |
         sudo -E flyway info
-
-  # rollback:
-  #   runs-on: [self-hosted, uship-linux]
-
-  #   steps:
-  #   - uses: actions/checkout@v3
-
-  #   - name: Rollback changes
-  #     run: |
-  #       # 
