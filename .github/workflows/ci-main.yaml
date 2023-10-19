@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - testing-connection
+      - testing-envs
 
 env:
   commit: ${{ github.sha }}
