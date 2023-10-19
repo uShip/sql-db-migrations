@@ -1,4 +1,4 @@
-name: ci-multi
+name: db-workflow
 
 on:
   workflow_dispatch:
@@ -7,9 +7,6 @@ on:
         description: 'Environment to deploy to (prod, dev, qa, sandbox)'
         required: true
         default: 'dev'
-
-env:
-  commit: ${{ github.sha }}
 
 jobs:
   deploy:
@@ -20,12 +17,10 @@ jobs:
     - name: Validate environment
       run: |
         echo "Selected environment: ${{ github.event.inputs.environment }}"
-        case "${{ github.event.inputs.environment }}" in
-          prod|dev|qa|sandbox) # allowed values
-            echo "Proceeding with the deployment to ${{ github.event.inputs.environment }} environment."
-            ;;
-          *)
-            echo "Error: Invalid environment selected. Allowed values are prod, dev, qa, or sandbox."
+        case "${{ github.event.inputs.environment }}" in prod|dev|qa|sandbox) 
+            echo "Deploying to ${{ github.event.inputs.environment }}"
+            ;;*)
+            echo "Error: Invalid environment selected. Allowed values are prod, dev, qa, or sandbox"
             exit 1
             ;;
         esac
