@@ -52,3 +52,4 @@ jobs:
         FLYWAY_PASSWORD: ${{ secrets.DB_PASS }}
       run: |
         sudo -E flyway info
+        
