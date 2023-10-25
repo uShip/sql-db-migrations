@@ -1,18 +1,18 @@
-name: db-workflow
+name: Setup Environment
 
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy to (prod, dev, qa, sandbox)'
+  workflow_call:
+    inputs: 
+      environment: 
+        description: 'Target environment'
         required: true
-        default: 'dev'
-
+        type: string
+   
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]
     environment: 
-      name: ${{ github.event.inputs.environment }}
+      name: ${{inputs.environment}}
     steps:
     - name: Validate environment
       run: |
@@ -20,7 +20,7 @@ jobs:
         case "${{ github.event.inputs.environment }}" in prod|dev|qa|sandbox) 
             echo "Deploying to ${{ github.event.inputs.environment }}"
             ;;*)
-            echo "Error: Invalid environment selected. Allowed values are prod, dev, qa, or sandbox"
+            echo "Error: Invalid environment selected. Allowed values: prod, dev, qa, or sandbox"
             exit 1
             ;;
         esac
@@ -39,11 +39,3 @@ jobs:
         tar -xzf /tmp/flyway.tar.gz -C /tmp
         sudo mv /tmp/flyway-9.22.3 /opt/flyway
         sudo ln -s /opt/flyway/flyway /usr/local/bin/flyway
-    
-    - name: Test Database Connection with Flyway Info
-      env: 
-        FLYWAY_URL: ${{ secrets.JDBC_URL }}
-        FLYWAY_USER: ${{ secrets.DB_USER }}
-        FLYWAY_PASSWORD: ${{ secrets.DB_PASS }}
-      run: |
-        sudo -E flyway info
