@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-      - testing-connection
-      - testing-envs
+      - testing-migration
 
 env:
   commit: ${{ github.sha }}
