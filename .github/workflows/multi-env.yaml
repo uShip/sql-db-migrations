@@ -7,6 +7,10 @@ on:
         description: 'Environment to deploy to (prod, dev, qa, sandbox)'
         required: true
         default: 'dev'
+  pull_request:
+  
+env:
+  environment: 'dev'
 
 jobs:
   deploy:
@@ -47,4 +51,5 @@ jobs:
         FLYWAY_PASSWORD: ${{ secrets.DB_PASS }}
       run: |
         sudo -E flyway info
+        sudo -E flyway baseline
         sudo -E flyway migrate
