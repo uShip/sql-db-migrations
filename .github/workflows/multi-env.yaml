@@ -7,10 +7,10 @@ on:
         description: 'Environment to deploy to (prod, dev, qa, sandbox)'
         required: true
         default: 'dev'
-  pull_request:
+#   pull_request:
   
-env:
-  environment: 'dev'
+# env:
+#   environment: 'dev'
 
 jobs:
   deploy:
