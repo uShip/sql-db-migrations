@@ -1,6 +1,6 @@
 
 
-CREATE OR ALTER VIEW [AmyTestView] 
+CREATE VIEW [AmyTestView] 
 AS
 
-SELECT TOP 1 from dbo.AmyTest where ID = 1;
+SELECT Description from dbo.AmyTest where ID = 1;
