@@ -3,7 +3,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [AmyTest1] (@ID int)
+CREATE OR ALTER PROCEDURE [AmyTest1] (@ID int)
 AS
 
 SELECT TOP 1 [Value] from dbo.AmyTest where ID = @ID
