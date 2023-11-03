@@ -6,4 +6,4 @@ GO
 CREATE PROCEDURE [AmyTest1] (@ID varchar(10))
 AS
 
-SELECT [Value] from dbo.AmyTest where ID = @ID
+SELECT TOP 1 [Value] from dbo.AmyTest where ID = @ID
