@@ -1,4 +1,4 @@
-CREATE TABLE Account.AmyTest(
-        ID INT, 
-        Value Varchar(100)
-)
+CREATE TABLE AmyTest(
+        ID INT NOT NULL , 
+        Value Varchar(100) NOT NULL
+);
