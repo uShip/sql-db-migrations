@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS amytest
+RENAME COLUMN VALUE TO Description;
