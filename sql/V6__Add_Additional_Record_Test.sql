@@ -1,2 +1,2 @@
-INSERT INTO AmyTest(ID, [Value]),
+INSERT INTO AmyTest(ID, [Value])
 VALUES (19, 'Weeee');
