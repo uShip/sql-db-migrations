@@ -1,5 +1,13 @@
 name: Setup Environment
 
+on:
+  workflow_call:
+    inputs: 
+      environment: 
+        description: 'Target environment'
+        required: true
+        type: string
+        
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]
