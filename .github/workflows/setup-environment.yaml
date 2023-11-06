@@ -1,13 +1,5 @@
 name: Setup Environment
 
-on:
-  workflow_call:
-    inputs: 
-      environment: 
-        description: 'Target environment'
-        required: true
-        type: string
-   
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]
@@ -16,9 +8,9 @@ jobs:
     steps:
     - name: Validate environment
       run: |
-        echo "Selected environment: ${{ github.event.inputs.environment }}"
-        case "${{ github.event.inputs.environment }}" in prod|dev|qa|sandbox) 
-            echo "Deploying to ${{ github.event.inputs.environment }}"
+        echo "Selected environment: ${{ inputs.environment }}"
+        case "${{ inputs.environment }}" in prod|dev|qa|sandbox) 
+            echo "Deploying to ${{ inputs.environment }}"
             ;;*)
             echo "Error: Invalid environment selected. Allowed values: prod, dev, qa, or sandbox"
             exit 1
