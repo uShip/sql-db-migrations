@@ -10,7 +10,7 @@ on:
 
 jobs:
   setup:
-    uses: ./.github/workflows/setup-environment.yaml@main
+    uses: ./.github/workflows/setup-environment.yaml@dev
     with:
       environment: ${{ github.event.inputs.environment }}
 
@@ -19,15 +19,11 @@ jobs:
     runs-on: [self-hosted, uship-linux] 
     steps:
 
-      - name: Set up Flyway
-        run: |
-          # Your setup for Flyway here...
-    
       - name: Run Flyway Migrations
         env:
           FLYWAY_URL: ${{ secrets.JDBC_URL }}
           FLYWAY_USER: ${{ secrets.DB_USER }}
           FLYWAY_PASSWORD: ${{ secrets.DB_PASS }}
         run: |
-          echo "Running Flyway migrations..."
+          echo "Running Flyway migrations"
           sudo -E flyway migrate
