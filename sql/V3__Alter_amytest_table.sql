@@ -1,2 +1,0 @@
-ALTER TABLE AmyTest
-ALTER COLUMN [Value]Varchar(30)
