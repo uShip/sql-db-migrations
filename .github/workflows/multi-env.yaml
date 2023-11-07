@@ -33,17 +33,12 @@ jobs:
         java-version: 11
         distribution: 'adopt'
 
-    - name: Set up Flyway
-      run: |
-        curl -o /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.22.3/flyway-commandline-9.22.3-linux-x64.tar.gz
-        tar -xzf /tmp/flyway.tar.gz -C /tmp
-        sudo mv /tmp/flyway-9.22.3 /opt/flyway
-        sudo ln -s /opt/flyway/flyway /usr/local/bin/flyway
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.17.1
     
-    - name: Test Database Connection with Flyway Info
-      env: 
-        FLYWAY_URL: ${{ secrets.JDBC_URL }}
-        FLYWAY_USER: ${{ secrets.DB_USER }}
-        FLYWAY_PASSWORD: ${{ secrets.DB_PASS }}
+    - name: Installing Goose
       run: |
-        sudo -E flyway baseline
+        go install github.com/pressly/goose/v3/cmd/goose@latest
+        goose --version
