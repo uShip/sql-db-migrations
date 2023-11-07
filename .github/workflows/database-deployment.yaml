@@ -10,7 +10,7 @@ on:
 
 jobs:
   setup:
-    uses: ./.github/workflows/setup-environment.yaml@main
+    uses: ./.github/workflows/setup-environment.yaml
     with:
       environment: ${{ github.event.inputs.environment }}
 
