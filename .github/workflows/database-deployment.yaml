@@ -48,7 +48,7 @@ jobs:
           FLYWAY_URL: ${{ secrets.JDBC_URL }}
           FLYWAY_USER: ${{ secrets.DB_USER }}
           FLYWAY_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          FLYWAY_LOCATIONS: ./sql/${{ github.event.inputs.environment }}
+          FLYWAY_LOCATIONS: filesystem:./sql/${{ github.event.inputs.environment }}
         run: |
           echo "Running Flyway migrations"
-          flyway --locations=${FLYWAY_LOCATIONS} info
+          flyway info
