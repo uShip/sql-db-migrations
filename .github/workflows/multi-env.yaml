@@ -17,7 +17,7 @@ jobs:
     - name: Validate environment
       run: |
         echo "Selected environment: ${{ github.event.inputs.environment }}"
-        case "${{ github.event.inputs.environment }}" in prod|dev|qa|sandbox) 
+        case "${{ github.event.inputs.environment }}" in prod|dev|qa|sandbox|devPricing) 
             echo "Deploying to ${{ github.event.inputs.environment }}"
             ;;*)
             echo "Error: Invalid environment selected. Allowed values are prod, dev, qa, or sandbox"
@@ -46,4 +46,4 @@ jobs:
         FLYWAY_USER: ${{ secrets.DB_USER }}
         FLYWAY_PASSWORD: ${{ secrets.DB_PASS }}
       run: |
-        sudo -E flyway migrate
+        sudo -E flyway baseline
