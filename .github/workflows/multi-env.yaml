@@ -40,5 +40,5 @@ jobs:
     
     - name: Installing Goose
       run: |
-        go install github.com/pressly/goose/v3/cmd/goose@latest
+        go install github.com/gdey/goose/v3/cmd/goose@latest
         goose --version
