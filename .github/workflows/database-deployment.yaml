@@ -10,25 +10,24 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, linux]
+    runs-on: [self-hosted, uship-linux]
     environment: 
       name: ${{ github.event.inputs.environment }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
       - name: Validate environment
         run: |
           echo "Selected environment: ${{ github.event.inputs.environment }}"
           case "${{ github.event.inputs.environment }}" in prod|dev|qa|sandbox)
-              echo "Deploying to ${{ github.event.inputs.environment }}"
-              ;;
-            *)
-              echo "Error: Invalid environment selected. Allowed values: prod, dev, qa, or sandbox"
-              exit 1
-              ;;
+          echo "Deploying to ${{ github.event.inputs.environment }}"
+          ;;
+          *)
+          echo "Error: Invalid environment selected. Allowed values: prod, dev, qa, or sandbox"
+          exit 1
+          ;;
           esac
+      
+      - uses: actions/checkout@v3
 
       - name: Set up Java
         uses: actions/setup-java@v2
