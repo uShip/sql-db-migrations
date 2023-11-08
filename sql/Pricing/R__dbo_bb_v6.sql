@@ -1,19 +1,24 @@
-SET DEADLOCK_PRIORITY LOW 
 SET LOCK_TIMEOUT 20000
 
-BEGIN TRAN 
-CREATE OR ALTER TABLE dbo.bb_v6(
+IF 
+ ( NOT EXISTS 
+   (select object_id from sys.objects where object_id = OBJECT_ID(N'[dbo].[bb_v6]') and type = 'U')
+ )
+BEGIN
+
+CREATE TABLE dbo.bb_v6(
 	[bb_rating] [int] NOT NULL,
 	[bb_surchargeD] [float] NULL,
 	[bb_surchargeP] [float] NULL 
 ) ON [PRIMARY]
 
+END
 
+CREATE TABLE #bb_v6_insert ([bb_rating] int, [bb_surchargeD] float, [bb_surchargeP] float) 
 INSERT INTO #bb_v6_insert ([bb_rating], [bb_surchargeD], [bb_surchargeP]) 
 VALUES  (0, 0, 0),
 		(1, 0, 0.1),
 		(2, 0, 0.18)
-
 
 MERGE dbo.bb_v6 AS b
 	USING #bb_v6_insert AS i
@@ -32,7 +37,4 @@ MERGE dbo.bb_v6 AS b
                 i.bb_rating,
                 i.bb_surchargeD,
                 i.bb_surchargeP
-                )
-				
-				
-	COMMIT;
+                );
