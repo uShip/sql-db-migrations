@@ -2,7 +2,7 @@ SET DEADLOCK_PRIORITY LOW
 SET LOCK_TIMEOUT 20000
 
 BEGIN TRAN 
-CREATE OR ALTER TABLE pricing.dbo.bb_v6(
+CREATE OR ALTER TABLE dbo.bb_v6(
 	[bb_rating] [int] NOT NULL,
 	[bb_surchargeD] [float] NULL,
 	[bb_surchargeP] [float] NULL 
