@@ -29,7 +29,7 @@ MERGE dbo.bb_v6 AS b
 	WHEN MATCHED THEN
 	  UPDATE SET 
             b.bb_surchargeD=i.bb_surchargeD,
-            b.bb_surchargeP=i.bb_surchargeP
+            b.bb_surchargeP=i.bb_surchargeP,
 			b.DateUpdatedUTC=sysutcdatetime()
 	WHEN NOT MATCHED THEN
 	  INSERT (
