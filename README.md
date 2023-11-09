@@ -30,4 +30,4 @@ For each migration, add your repeatable SQL script to the `sql/` directory. Use 
 
 ## Rollbacks
 
-In the event you need to roll back a change, you can redeploy the version of the script from the branch that has the desired previous state. This action will overwrite the current script in the target environment with the one from the branch.
+In the event you need to roll back a change, you can redeploy the version of the script from the branch that has the desired previous state.
