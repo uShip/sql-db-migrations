@@ -12,7 +12,7 @@ CREATE TABLE dbo.bb_v6(
 	[bb_surchargeD] [float] NULL,
 	[bb_surchargeP] [float] NULL, 
 	[DateCreatedUTC] datetime2 NOT NULL CONSTRAINT [DF_BigAndBulkySurcharge_DateCreated]  DEFAULT (sysutcdatetime()) FOR [DateCreatedUTC],
-	[DateUpdatedUTC] datetime2 NOT NULL CONSTRAINT [DF_BigAndBulkySurcharge_DateCreated]  DEFAULT (sysutcdatetime()) FOR [DateCreatedUTC]
+	[DateUpdatedUTC] datetime2 NOT NULL CONSTRAINT [DF_BigAndBulkySurcharge_DateUpdated]  DEFAULT (sysutcdatetime()) FOR [DateUpdatedUTC]
 ) ON [PRIMARY]
 
 END
