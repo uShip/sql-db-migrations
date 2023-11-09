@@ -1,2 +1,4 @@
 IF EXISTS(SELECT 1 FROM sys.views WHERE NAME='AmyTestView' and TYPE='v')
+BEGIN
 DROP VIEW  AmyTestView;
+END
