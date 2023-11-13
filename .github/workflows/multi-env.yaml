@@ -11,13 +11,36 @@ on:
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]
-    environment: 
+    environment:
       name: ${{ github.event.inputs.environment }}
     steps:
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install SQLFluff
+      run: |
+        pip install sqlfluff
+
+    - name: Fix SQL files
+      run: |
+        sqlfluff fix --dialect tsql .
+
+    - name: Commit and push if changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add -A
+        git commit -m "Auto-fix SQL files" -a || echo "No changes to commit"
+        git push
+
+
     - name: Validate environment
       run: |
         echo "Selected environment: ${{ github.event.inputs.environment }}"
-        case "${{ github.event.inputs.environment }}" in prod|dev|qa|sandbox|devPricing) 
+        case "${{ github.event.inputs.environment }}" in prod|dev|qa|sandbox|devPricing)
             echo "Deploying to ${{ github.event.inputs.environment }}"
             ;;*)
             echo "Error: Invalid environment selected. Allowed values are prod, dev, qa, or sandbox"
@@ -39,9 +62,9 @@ jobs:
         tar -xzf /tmp/flyway.tar.gz -C /tmp
         sudo mv /tmp/flyway-9.22.3 /opt/flyway
         sudo ln -s /opt/flyway/flyway /usr/local/bin/flyway
-    
+
     - name: Test Database Connection with Flyway Info
-      env: 
+      env:
         FLYWAY_URL: ${{ secrets.JDBC_URL }}
         FLYWAY_USER: ${{ secrets.DB_USER }}
         FLYWAY_PASSWORD: ${{ secrets.DB_PASS }}

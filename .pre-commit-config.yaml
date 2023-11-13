@@ -1,0 +1,15 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: 2.3.5
+    hooks:
+      - id: sqlfluff-lint
+        args: ['--dialect', 'tsql', '--exclude-rules', 'RF04, LT05']
+      - id: sqlfluff-fix
+        args: ['--dialect', 'tsql', '--exclude-rules', 'RF04, LT05']
+        stages: [manual]  # 'manual' means it won't run automatically on commit

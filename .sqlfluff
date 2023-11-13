@@ -1,0 +1,6 @@
+[sqlfluff]
+dialect = tsql
+
+[sqlfluff:rules]
+# Custom rules configuration
+exclude_rules = RF04

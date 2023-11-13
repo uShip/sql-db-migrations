@@ -31,9 +31,9 @@ jobs:
         tar -xzf /tmp/flyway.tar.gz -C /tmp
         sudo mv /tmp/flyway-9.22.3 /opt/flyway
         sudo ln -s /opt/flyway/flyway /usr/local/bin/flyway
-    
+
     - name: Test Database Connection with Flyway Info
-      env: 
+      env:
         FLYWAY_URL: ${{secrets.DB_HOSTNAME}}
         FLYWAY_USER: ${{secrets.DB_USER}}
         FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
@@ -48,4 +48,4 @@ jobs:
 
   #   - name: Rollback changes
   #     run: |
-  #       # 
+  #       #
