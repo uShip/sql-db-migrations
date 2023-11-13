@@ -26,12 +26,15 @@ jobs:
 
     - name: Fix SQL files
       run: |
-        sqlfluff fix --dialect tsql .
+        sqlfluff fix --dialect tsql . --exclude-rules RF04,LF05
+
+    - name: Check for changes
+      id: git-check
+      run: |
+        git diff --exit-code || echo "::set-output name=changes::true"
 
     - name: Commit and push if changes
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
         git add -A
         git commit -m "Auto-fix SQL files" -a || echo "No changes to commit"
         git push
