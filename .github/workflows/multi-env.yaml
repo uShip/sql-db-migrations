@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       environment:
+        type: choice
         description: 'Environment to deploy to (prod, dev, qa, sandbox)'
+        options:
+          - devPricing
+          - dev
         required: true
-        default: 'dev'
+        default: 'devPricing'
 
 jobs:
   deploy:
@@ -33,12 +37,12 @@ jobs:
       run: |
         git diff --exit-code || echo "::set-output name=changes::true"
 
-    - name: Commit and push if changes
-      if: steps.git-check.outputs.changes == 'true'
-      run: |
-        git add -A
-        git commit -m "Auto-fix SQL files" -a || echo "No changes to commit"
-        git push
+    # - name: Commit and push if changes
+    #   if: steps.git-check.outputs.changes == 'true'
+    #   run: |
+    #     git add -A
+    #     git commit -m "Auto-fix SQL files" -a || echo "No changes to commit"
+    #     git push
 
 
     - name: Validate environment
