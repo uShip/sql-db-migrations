@@ -13,7 +13,7 @@ IF
     )
     BEGIN
 
-        CREATE TABLE dbo.fuel_surcharge_v6 (
+        CREATE TABLE dbo.fuel_surcharge (
             low [float] NULL,
             high [float] NULL,
             fuel_baseline [float] NULL,
