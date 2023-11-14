@@ -12,7 +12,7 @@ IF
     )
     BEGIN
 
-        CREATE TABLE dbo.omsa_surcharge (
+        CREATE TABLE dbo.msa_surcharge (
             msa [nvarchar](100) NULL,
             surchargep [float] NULL,
             surcharged [float] NULL
