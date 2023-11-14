@@ -48,5 +48,5 @@ jobs:
           FLYWAY_USER: ${{ secrets.DB_USER }}
           FLYWAY_PASSWORD: ${{ secrets.DB_PASS }}
         run: |
-          echo "Running Flyway migrations"
+          echo "Running Flyway migrations..."
           sudo -E flyway baseline
