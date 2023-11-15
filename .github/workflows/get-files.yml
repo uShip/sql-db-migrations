@@ -1,17 +1,6 @@
 name: Python Script Workflow
-on:
-    workflow_dispatch:
-      inputs:
-        name:
-          type: choice
-          description: Lambda
-          options:
-          - gclids
-          - instana
-        message for invoking:
-          required: true
-        environment:
-          type: environment
+
+on: [push]
 
 jobs:
   run-python-script:
