@@ -1,6 +1,16 @@
 name: Python Script Workflow
 
-on: [push]
+on:
+    workflow_dispatch:
+        # inputs:
+        #   environment:
+        #     type: choice
+        #     description: 'Environment to deploy to (prod, dev, qa, sandbox)'
+        #     options:
+        #       - devPricing
+        #       - dev
+        #     required: true
+        #     default: 'devPricing'
 
 jobs:
   run-python-script:
@@ -12,4 +22,4 @@ jobs:
         fetch-depth: 0 # Fetches all history for all branches and tags
 
     - name: Run Python script
-      run: python your-script.py
+      run: python get_files.py
