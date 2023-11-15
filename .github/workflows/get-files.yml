@@ -17,8 +17,10 @@ on:
         default: 'devPricing'
 
 jobs:
-  run-python-script:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: [self-hosted, uship-linux]
+    environment:
+      name: ${{ github.event.inputs.environment }}
 
     steps:
     - uses: actions/checkout@v3
