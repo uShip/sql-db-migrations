@@ -2,15 +2,11 @@ name: Python Script Workflow
 
 on:
     workflow_dispatch:
-        # inputs:
-        #   environment:
-        #     type: choice
-        #     description: 'Environment to deploy to (prod, dev, qa, sandbox)'
-        #     options:
-        #       - devPricing
-        #       - dev
-        #     required: true
-        #     default: 'devPricing'
+        inputs:
+            message for invoking:
+              required: true
+            environment:
+              type: environment
 
 jobs:
   run-python-script:
