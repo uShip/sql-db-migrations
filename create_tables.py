@@ -12,12 +12,12 @@ def log_message(message):
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     print(f"{timestamp} - {message}")
 
-def main(db_server, db_name, username, password, sql_path):
+def main(db_server, db_name, username, password, repo_path):
     # Create connection string
     conn_str = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={db_server};DATABASE={db_name};UID={username};PWD={password}'
 
     # Get list of .sql files in specified directory, sorted alphabetically
-    sql_files = sorted([f for f in os.listdir(sql_path) if f.endswith('.sql')])
+    sql_files = sorted(find_sql_files(repo_path))
 
     for sql_file in sql_files:
         file_path = os.path.join(sql_path, sql_file)
@@ -47,7 +47,7 @@ def main(db_server, db_name, username, password, sql_path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 6:
-        print("Usage: python migrate.py <db_server> <db_name> <username> <password> <path_to_sql_files>")
+        print("Usage: python migrate.py <db_server> <db_name> <username> <password> <path_to_repository>")
         sys.exit(1)
 
     main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
