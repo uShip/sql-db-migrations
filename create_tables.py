@@ -1,8 +1,6 @@
 import os
-# import pyodbc
-import sys
+import pyodbc
 import glob
-import argparse
 from datetime import datetime
 
 def find_sql_files(start_path):
@@ -19,6 +17,19 @@ def main(db_server, db_name, username, password, repo_path):
 
     # Get list of .sql files in specified directory, sorted alphabetically
     sql_files = sorted(find_sql_files(repo_path))
+    sql_script = "SELECT * FROM dbo.calendar"
+    try:
+        with pyodbc.connect(conn_str) as conn:
+            # with open(sql_file, 'r') as file:
+                # sql_script = file.read()
+            with conn.cursor() as cursor:
+                cursor.execute(sql_script)
+                conn.commit()
+        # Log on success
+        log_message("Success")
+    except Exception as e:
+        # Log other types of errors
+        log_message(f"Error occurred: {e}")
 
     for sql_file in sql_files:
 
@@ -36,10 +47,10 @@ def main(db_server, db_name, username, password, repo_path):
             # Log on success
             log_message("Success")
 
-        except pyodbc.Error as e:
-            # Log SQL error
-            log_message(f"SQL Error occurred: {e}")
-            # Continue with the next file instead of stopping the script
+        # except pyodbc.Error as e:
+        #     # Log SQL error
+        #     log_message(f"SQL Error occurred: {e}")
+        #     # Continue with the next file instead of stopping the script
         except Exception as e:
             # Log other types of errors
             log_message(f"Error occurred: {e}")
@@ -55,7 +66,7 @@ if __name__ == "__main__":
 
     # args = parser.parse_args()
     db_server = os.getenv('DB_SERVER', 'localhost')
-    db_name = os.getenv('DB_NAME', 'test')
+    db_name = os.getenv('DATABASE', 'test')
     username = os.getenv('USERNAME')
     password = os.getenv('PASSWORD')
     repo_path = os.getenv('REPO_PATH', '.')
