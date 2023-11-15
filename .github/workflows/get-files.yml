@@ -1,0 +1,15 @@
+name: Python Script Workflow
+
+on: [push]
+
+jobs:
+  run-python-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # Fetches all history for all branches and tags
+
+    - name: Run Python script
+      run: python your-script.py
