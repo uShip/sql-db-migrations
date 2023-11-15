@@ -2,6 +2,7 @@ import os
 import pyodbc
 import sys
 import glob
+import argparse
 from datetime import datetime
 
 def find_sql_files(start_path):
@@ -20,18 +21,17 @@ def main(db_server, db_name, username, password, repo_path):
     sql_files = sorted(find_sql_files(repo_path))
 
     for sql_file in sql_files:
-        file_path = os.path.join(sql_path, sql_file)
 
         # Log before executing
         log_message(f"Executing {sql_file}")
 
         try:
-            with pyodbc.connect(conn_str) as conn:
-                with open(file_path, 'r') as file:
-                    sql_script = file.read()
-                    with conn.cursor() as cursor:
-                        cursor.execute(sql_script)
-                        conn.commit()
+            # with pyodbc.connect(conn_str) as conn:
+            #     with open(sql_file, 'r') as file:
+            #         sql_script = file.read()
+            #         with conn.cursor() as cursor:
+            #             cursor.execute(sql_script)
+            #             conn.commit()
 
             # Log on success
             log_message("Success")
@@ -46,8 +46,13 @@ def main(db_server, db_name, username, password, repo_path):
             # Continue with the next file
 
 if __name__ == "__main__":
-    if len(sys.argv) != 6:
-        print("Usage: python migrate.py <db_server> <db_name> <username> <password> <path_to_repository>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Database Migration Script")
+    parser.add_argument('--db_server', default='localhost', help='Database server address (default: localhost)')
+    parser.add_argument('--db_name', required=True, help='Database name')
+    parser.add_argument('--username', required=True, help='Database username')
+    parser.add_argument('--password', required=True, help='Database password')
+    parser.add_argument('--repo_path', default='.', help='Path to the repository containing SQL files (default: current directory)')
 
-    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+    args = parser.parse_args()
+
+    main(args.db_server, args.db_name, args.username, args.password, args.repo_path)

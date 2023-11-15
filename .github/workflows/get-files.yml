@@ -12,4 +12,4 @@ jobs:
         fetch-depth: 0 # Fetches all history for all branches and tags
 
     - name: Run Python script
-      run: python get_files.py
+      run: python create_tables.py
