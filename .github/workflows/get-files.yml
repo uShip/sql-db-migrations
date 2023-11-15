@@ -12,4 +12,9 @@ jobs:
         fetch-depth: 0 # Fetches all history for all branches and tags
 
     - name: Run Python script
-      run: python create_tables.py
+      run: python create_tables.py --db_server ${{ secrets.JDBC_URL }} --db_name ${{ secrets.DB_NAME }} --username ${{ secrets.DB_USER }} --password ${{ secrets.DB_PASS }} --repo_path .
+      env:
+        DB_SERVER: ${{ secrets.JDBC_URL }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        USERNAME: ${{ secrets.DB_USER }}
+        PASSWORD: ${{ secrets.DB_PASS }}

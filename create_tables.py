@@ -46,13 +46,18 @@ def main(db_server, db_name, username, password, repo_path):
             # Continue with the next file
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Database Migration Script")
-    parser.add_argument('--db_server', default='localhost', help='Database server address (default: localhost)')
-    parser.add_argument('--db_name', required=True, help='Database name')
-    parser.add_argument('--username', required=True, help='Database username')
-    parser.add_argument('--password', required=True, help='Database password')
-    parser.add_argument('--repo_path', default='.', help='Path to the repository containing SQL files (default: current directory)')
+    # parser = argparse.ArgumentParser(description="Database Migration Script")
+    # parser.add_argument('--db_server', default='localhost', help='Database server address (default: localhost)')
+    # parser.add_argument('--db_name', required=True, help='Database name')
+    # parser.add_argument('--username', required=True, help='Database username')
+    # parser.add_argument('--password', required=True, help='Database password')
+    # parser.add_argument('--repo_path', default='.', help='Path to the repository containing SQL files (default: current directory)')
 
-    args = parser.parse_args()
+    # args = parser.parse_args()
+    db_server = os.getenv('DB_SERVER', 'localhost')
+    db_name = os.getenv('DB_NAME', 'test')
+    username = os.getenv('USERNAME')
+    password = os.getenv('PASSWORD')
+    repo_path = os.getenv('REPO_PATH', '.')
 
-    main(args.db_server, args.db_name, args.username, args.password, args.repo_path)
+    main(db_server, db_name, username, password, repo_path)
