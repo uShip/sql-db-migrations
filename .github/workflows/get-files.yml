@@ -36,7 +36,7 @@ jobs:
     - name: Run Python script
       run: python create_tables.py
       env:
-        DB_SERVER: ${{ env.SERVER_NAME }}
-        DB_NAME: ${{ env.DATABASE }}
+        DB_SERVER: ${{ secrets.SERVER_NAME }}
+        DB_NAME: ${{ secrets.DATABASE }}
         USERNAME: ${{ secrets.DB_USER }}
         PASSWORD: ${{ secrets.DB_PASS }}
