@@ -9,6 +9,7 @@ on:
         description: 'Environment to deploy to (prod, dev, qa, sandbox)'
         options:
           - devPricing
+          - dev
           - prod
           - qa
           - sandbox
