@@ -102,8 +102,8 @@ if __name__ == "__main__":
     # parser.add_argument('--repo_path', default='.', help='Path to the repository containing SQL files (default: current directory)')
 
     # args = parser.parse_args()
-    db_server = os.getenv('DB_SERVER', 'localhost')
-    db_name = os.getenv('DATABASE', 'test')
+    db_server = os.getenv('DB_SERVER')
+    db_name = os.getenv('DB_NAME')
     username = os.getenv('USERNAME')
     password = os.getenv('PASSWORD')
     repo_path = os.getenv('REPO_PATH', '.')
