@@ -26,12 +26,6 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0 # Fetches all history for all branches and tags
-    - uses: Yarden-zamir/install-mssql-odbc@main
-      with:
-        ODBC_VERSION: 17
-        DISTRO: Ubuntu
-        DOCS_URL: https://yarden-zamir.com/alternate-docs-path.md
-        REMOVE_EXITS: true
     - name: Set up Python 3.10.6
       uses: actions/setup-python@v3
       with:
@@ -39,7 +33,14 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+
+    - uses: Yarden-zamir/install-mssql-odbc@main
+      with:
+        ODBC_VERSION: 17
+        DISTRO: Ubuntu
+        DOCS_URL: https://yarden-zamir.com/alternate-docs-path.md
+        REMOVE_EXITS: true
+    - run: pip install -r requirements.txt
 
     - name: Run Python script
       run: python create_tables.py
