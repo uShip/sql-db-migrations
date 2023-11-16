@@ -73,13 +73,13 @@ def main(db_server, db_name, username, password, repo_path):
         log_message(f"Executing {sql_file}")
 
         try:
-            with crs:
-                with open(sql_file, 'r') as file:
-                    sql_script = file.read()
-                crs.execute(sql_script)
-                print(sql_script)
-                result = crs.fetchall()
-                print(f"Output of {sql_file}:\n", result)
+            with open(sql_file, 'r') as file:
+                sql_script = file.read()
+            crs.execute(sql_script)
+            conn.commit()
+            print(sql_script)
+            # result = crs.fetchall()
+            print(f"Output of {sql_file}:\n")
             # Log on success
             log_message("Success")
 
@@ -93,18 +93,18 @@ def main(db_server, db_name, username, password, repo_path):
             # Continue with the next file
 
     try:
-        with crs:
-            # with open(sql_file, 'r') as file:
-                # sql_script = file.read()
-            sql_script = "SELECT * FROM dbo.omsa_surcharge"
-            crs.execute(sql_script)
-            # conn.commit()
-            # Fetch all rows from the query
-            rows = crs.fetchall()
 
-            # Print the rows
-            for row in rows:
-                print(row)
+        # with open(sql_file, 'r') as file:
+            # sql_script = file.read()
+        sql_script = "SELECT * FROM dbo.omsa_surcharge"
+        crs.execute(sql_script)
+        # conn.commit()
+        # Fetch all rows from the query
+        rows = crs.fetchall()
+
+        # Print the rows
+        for row in rows:
+            print(row)
         # Log on success
         log_message("Success")
     except Exception as e:

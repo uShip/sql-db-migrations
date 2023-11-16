@@ -7,7 +7,7 @@ IF
         (
             SELECT object_id
             FROM sys.objects
-            WHERE object_id = OBJECT_ID(N'[dbo].[msa_surcharge]') AND type = 'U'
+            WHERE object_id = OBJECT_ID(N'[dbo].[dmsa_surcharge]') AND type = 'U'
         )
     )
     BEGIN
