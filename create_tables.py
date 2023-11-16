@@ -26,9 +26,9 @@ def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection
     log_message("Trying to connect to Database")
     try:
         conn = pyodbc.connect(connection_str, timeout=90)
-        # crs = conn.cursor()
+        crs = conn.cursor()
         log_message("Connected to Database")
-        return conn
+        return conn, crs
     except (pyodbc.Error, pyodbc.OperationalError) as e:
         log_message("Failed to connect to the Database: %s", e)
         raise Exception("Database connection timed out or failed") from e
@@ -37,11 +37,22 @@ def DestroyDBConnections(conn, crs):
     if "Connection" in str(type(conn)) and "Cursor" in str(type(crs)):
         crs.close()
         conn.close()
-        logger.info("Closing the connection.")
+        log_message("Closing the connection.")
 
 def find_sql_files(start_path):
     """Recursively find all .sql files in the given directory."""
     return glob.glob(start_path + '/**/*.sql', recursive=True)
+
+def execute_sql_script(file_path, cursor):
+    with open(file_path, 'r') as file:
+        sql_script = file.read()
+    cursor.execute(sql_script)
+    try:
+        result = cursor.fetchall()
+        print(f"Output of {file_path}:\n", result)
+    except pyodbc.Error:
+        # No results to fetch (for non-SELECT queries)
+        print(f"Executed {file_path} successfully, no output.")
 
 def log_message(message):
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -50,23 +61,11 @@ def log_message(message):
 def main(db_server, db_name, username, password, repo_path):
     # Create connection string
     # conn_str = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={db_server};DATABASE={db_name};UID={username};PWD={password}'
-    conn = connect_db(db_server, db_name, username, password)
+    conn, crs = connect_db(db_server, db_name, username, password)
     # Get list of .sql files in specified directory, sorted alphabetically
-    sql_files = sorted(find_sql_files(repo_path))
-    sql_script = "SELECT * FROM dbo.calendar"
 
-    try:
-        with conn:
-            # with open(sql_file, 'r') as file:
-                # sql_script = file.read()
-            with conn.cursor() as cursor:
-                cursor.execute(sql_script)
-                conn.commit()
-        # Log on success
-        log_message("Success")
-    except Exception as e:
-        # Log other types of errors
-        log_message(f"Error occurred: {e}")
+    # sql_files = sorted(find_sql_files(repo_path))
+    sql_files = sorted(find_sql_files('sql/Pricing/test'))
 
     for sql_file in sql_files:
 
@@ -74,24 +73,43 @@ def main(db_server, db_name, username, password, repo_path):
         log_message(f"Executing {sql_file}")
 
         try:
-            # with pyodbc.connect(conn_str) as conn:
-            #     with open(sql_file, 'r') as file:
-            #         sql_script = file.read()
-            #         with conn.cursor() as cursor:
-            #             cursor.execute(sql_script)
-            #             conn.commit()
-
+            with crs:
+                with open(sql_file, 'r') as file:
+                    sql_script = file.read()
+                crs.execute(sql_script)
+                result = crs.fetchall
+                print(f"Output of {file_path}:\n", result)
             # Log on success
             log_message("Success")
 
-        # except pyodbc.Error as e:
-        #     # Log SQL error
-        #     log_message(f"SQL Error occurred: {e}")
-        #     # Continue with the next file instead of stopping the script
+        except pyodbc.Error as e:
+            # Log SQL error
+            log_message(f"SQL Error occurred: {e}")
+            # Continue with the next file instead of stopping the script
         except Exception as e:
             # Log other types of errors
             log_message(f"Error occurred: {e}")
             # Continue with the next file
+
+    try:
+        with crs:
+            # with open(sql_file, 'r') as file:
+                # sql_script = file.read()
+            sql_script = "SELECT * FROM dbo.omsa_surcharge"
+            crs.execute(sql_script)
+            # conn.commit()
+            # Fetch all rows from the query
+            rows = crs.fetchall()
+
+            # Print the rows
+            for row in rows:
+                print(row)
+        # Log on success
+        log_message("Success")
+    except Exception as e:
+        # Log other types of errors
+        log_message(f"Error occurred: {e}")
+
 
 if __name__ == "__main__":
     # parser = argparse.ArgumentParser(description="Database Migration Script")
