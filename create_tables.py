@@ -77,8 +77,9 @@ def main(db_server, db_name, username, password, repo_path):
                 with open(sql_file, 'r') as file:
                     sql_script = file.read()
                 crs.execute(sql_script)
-                result = crs.fetchall
-                print(f"Output of {file_path}:\n", result)
+                print(sql_script)
+                result = crs.fetchall()
+                print(f"Output of {sql_file}:\n", result)
             # Log on success
             log_message("Success")
 
