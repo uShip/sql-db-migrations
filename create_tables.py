@@ -50,7 +50,7 @@ def log_message(message):
 def main(db_server, db_name, username, password, repo_path):
     # Create connection string
     # conn_str = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={db_server};DATABASE={db_name};UID={username};PWD={password}'
-    conn, crs = connect_db(db_server, db_name, username, password)
+    conn = connect_db(db_server, db_name, username, password)
     # Get list of .sql files in specified directory, sorted alphabetically
     sql_files = sorted(find_sql_files(repo_path))
     sql_script = "SELECT * FROM dbo.calendar"
