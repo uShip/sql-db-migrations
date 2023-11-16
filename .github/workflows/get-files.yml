@@ -16,6 +16,21 @@ on:
         required: true
         default: 'devPricing'
 
+# inputs:
+#   ODBC_VERSION:
+#     description: 'ODBC version to install (18 or 17 validated)'
+#     default: "18"
+#   DISTRO:
+#     description: 'Distribution (from DOCS_URL)'
+#     default: Ubuntu
+#   DOCS_URL:
+#     description: 'URL to the docs page to scrape instructions from'
+#     default: "https://raw.githubusercontent.com/MicrosoftDocs/sql-docs/live/docs/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server.md"
+#   REMOVE_EXITS:
+#     default: 'true'
+#     description: 'Remove exit statements from the script (they break the workflow)'
+
+
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]
@@ -33,13 +48,23 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install requests
 
-    - uses: Yarden-zamir/install-mssql-odbc@main
-      with:
+    # - uses: Yarden-zamir/install-mssql-odbc@main
+    #   with:
+    #     ODBC_VERSION: 17
+    #     DISTRO: Ubuntu
+    #     DOCS_URL: https://yarden-zamir.com/alternate-docs-path.md
+    #     REMOVE_EXITS: true
+    - run: |
+        sudo dpkg --configure -a && true
+        python extract_instruction.py | bash
+      env:
+        DISTRO: "Ubuntu"
+        REMOVE_EXITS: 'true'
+        DOCS_URL: "https://raw.githubusercontent.com/MicrosoftDocs/sql-docs/live/docs/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server.md"
         ODBC_VERSION: 17
-        DISTRO: Ubuntu
-        DOCS_URL: https://yarden-zamir.com/alternate-docs-path.md
-        REMOVE_EXITS: true
+      shell: bash
     - run: pip install -r requirements.txt
 
     - name: Run Python script
