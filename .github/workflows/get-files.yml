@@ -26,6 +26,12 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0 # Fetches all history for all branches and tags
+    - uses: Yarden-zamir/install-mssql-odbc@main
+      with:
+        ODBC_VERSION: 17
+        DISTRO: Ubuntu
+        DOCS_URL: https://yarden-zamir.com/alternate-docs-path.md
+        REMOVE_EXITS: true
     - name: Set up Python 3.10.6
       uses: actions/setup-python@v3
       with:
