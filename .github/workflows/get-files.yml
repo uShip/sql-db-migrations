@@ -67,8 +67,13 @@ jobs:
       shell: bash
     - run: pip install -r requirements.txt
 
+    - name: Find Modified SQL Files
+      id: modified_sql
+      run: |
+        echo "MODIFIED_SQL=$(git diff --name-only --diff-filter=AM HEAD~ HEAD | grep '.sql$' | xargs)" >> $GITHUB_ENV
+
     - name: Run Python script
-      run: python create_tables.py
+      run: python deploy.py ${{ env.MODIFIED_SQL }}
       env:
         DB_SERVER: ${{ secrets.DB_SERVER }}
         DB_NAME: ${{ secrets.DATABASE }}

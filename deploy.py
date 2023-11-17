@@ -43,73 +43,58 @@ def find_sql_files(start_path):
     """Recursively find all .sql files in the given directory."""
     return glob.glob(start_path + '/**/*.sql', recursive=True)
 
-def execute_sql_script(file_path, cursor):
-    with open(file_path, 'r') as file:
-        sql_script = file.read()
-    cursor.execute(sql_script)
-    try:
-        result = cursor.fetchall()
-        print(f"Output of {file_path}:\n", result)
-    except pyodbc.Error:
-        # No results to fetch (for non-SELECT queries)
-        print(f"Executed {file_path} successfully, no output.")
-
 def log_message(message):
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     print(f"{timestamp} - {message}")
 
-def main(db_server, db_name, username, password, repo_path):
-    # Create connection string
-    # conn_str = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={db_server};DATABASE={db_name};UID={username};PWD={password}'
-    conn, crs = connect_db(db_server, db_name, username, password)
-    # Get list of .sql files in specified directory, sorted alphabetically
+def execute_sql_script(file_path, cursor, conn):
+    # Read the SQL file
+    try:
+        with open(file_path, 'r') as file:
+            sql_script = file.read()
 
-    # sql_files = sorted(find_sql_files(repo_path))
-    sql_files = sorted(find_sql_files('sql/Pricing/test'))
-
-    for sql_file in sql_files:
-
-        # Log before executing
-        log_message(f"Executing {sql_file}")
-
-        try:
-            with open(sql_file, 'r') as file:
-                sql_script = file.read()
-            crs.execute(sql_script)
+        # Check the file path and execute the corresponding SQL command
+        if 'create_table' in file_path:
+            cursor.execute(sql_script)
             conn.commit()
-            print(sql_script)
-            # result = crs.fetchall()
-            print(f"Output of {sql_file}:\n")
-            # Log on success
-            log_message("Success")
-
-        except pyodbc.Error as e:
+            print(f"Output of {file_path}:\n")
+        elif 'insert_data' in file_path:
+            cursor.execute(sql_script)
+            conn.commit()
+            print(f"Data inserted from {file_path}")
+        elif 'stored_procedures' in file_path:
+            cursor.execute(sql_script)
+            print(f"Stored procedure executed from {file_path}")
+    except pyodbc.Error as e:
             # Log SQL error
             log_message(f"SQL Error occurred: {e}")
             # Continue with the next file instead of stopping the script
-        except Exception as e:
-            # Log other types of errors
-            log_message(f"Error occurred: {e}")
-            # Continue with the next file
-
-    try:
-
-        # with open(sql_file, 'r') as file:
-            # sql_script = file.read()
-        sql_script = "SELECT * FROM dbo.omsa_surcharge"
-        crs.execute(sql_script)
-        # conn.commit()
-        # Fetch all rows from the query
-        rows = crs.fetchall()
-
-        # Print the rows
-        for row in rows:
-            print(row)
-        # Log on success
-        log_message("Success")
     except Exception as e:
         # Log other types of errors
         log_message(f"Error occurred: {e}")
+        # Continue with the next file
+
+
+def main(db_server, db_name, username, password, sql_files):
+    # Create connection string
+    conn, crs = connect_db(db_server, db_name, username, password)
+    # Get list of .sql files in specified directory, sorted alphabetically
+
+    base_folder_path = 'sql/Pricing'
+
+    # for root, dirs, files in os.walk(base_folder_path):
+    #     for file in files:
+    #         if file.endswith('.sql'):
+    #             file_path = os.path.join(root, file)
+    #             execute_sql_script(file_path, crs, conn)
+
+    for sql_file in sql_files:
+        print(f'starting {sql_file}')
+        execute_sql_file(sql_file)
+
+    # Close the cursor and connection
+    cursor.close()
+    conn.close()
 
 
 if __name__ == "__main__":
@@ -125,6 +110,7 @@ if __name__ == "__main__":
     db_name = os.getenv('DB_NAME')
     username = os.getenv('USERNAME')
     password = os.getenv('PASSWORD')
-    repo_path = os.getenv('REPO_PATH', '.')
+    # repo_path = os.getenv('REPO_PATH', '.')
+    sql_files = sys.argv[1:]
 
-    main(db_server, db_name, username, password, repo_path)
+    main(db_server, db_name, username, password, sql_files)
