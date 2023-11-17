@@ -76,22 +76,22 @@ def execute_sql_script(file_path, cursor, conn):
         # Continue with the next file
 
 
-def main(db_server, db_name, username, password, sql_files):
+def main(db_server, db_name, username, password, repo_path):
     # Create connection string
     conn, crs = connect_db(db_server, db_name, username, password)
     # Get list of .sql files in specified directory, sorted alphabetically
 
     base_folder_path = 'sql/Pricing'
 
-    # for root, dirs, files in os.walk(base_folder_path):
-    #     for file in files:
-    #         if file.endswith('.sql'):
-    #             file_path = os.path.join(root, file)
-    #             execute_sql_script(file_path, crs, conn)
+    for root, dirs, files in os.walk(base_folder_path):
+        for file in files:
+            if file.endswith('.sql'):
+                file_path = os.path.join(root, file)
+                execute_sql_script(file_path, crs, conn)
 
-    for sql_file in sql_files:
-        print(f'starting {sql_file}')
-        execute_sql_file(sql_file)
+    # for sql_file in sql_files:
+    #     print(f'starting {sql_file}')
+    #     execute_sql_file(sql_file)
 
     # Close the cursor and connection
     cursor.close()
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     db_name = os.getenv('DB_NAME')
     username = os.getenv('USERNAME')
     password = os.getenv('PASSWORD')
-    # repo_path = os.getenv('REPO_PATH', '.')
-    sql_files = sys.argv[1:]
+    repo_path = os.getenv('REPO_PATH', '.')
+    # sql_files = sys.argv[1:]
 
-    main(db_server, db_name, username, password, sql_files)
+    main(db_server, db_name, username, password, repo_path)
