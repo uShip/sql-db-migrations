@@ -70,7 +70,10 @@ jobs:
     - name: Find Modified SQL Files
       id: modified_sql
       run: |
-        echo "MODIFIED_SQL=$(git diff --name-only --diff-filter=AM HEAD~ HEAD | grep '.sql$' | xargs)" >> $GITHUB_ENV
+        MODIFIED_SQL=$(git diff --name-only --diff-filter=AM HEAD~ HEAD | grep '.sql$')
+        echo "Modified SQL Files:"
+        echo "$MODIFIED_SQL"
+        echo "MODIFIED_SQL=$(echo "$MODIFIED_SQL" | xargs)" >> $GITHUB_
 
     - name: Run Python script
       run: python deploy.py ${{ env.MODIFIED_SQL }}
