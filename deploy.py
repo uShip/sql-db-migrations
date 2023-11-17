@@ -94,7 +94,7 @@ def main(db_server, db_name, username, password, repo_path):
     #     execute_sql_file(sql_file)
 
     # Close the cursor and connection
-    cursor.close()
+    crs.close()
     conn.close()
 
 
