@@ -68,6 +68,7 @@ def execute_sql_script(file_path, cursor, conn):
         elif 'stored_procedures' in file_path:
             print('Starting Stored Procedure file')
             cursor.execute(sql_script)
+            conn.commit()
             print(f"Stored procedure executed from {file_path}")
     except pyodbc.Error as e:
             # Log SQL error
