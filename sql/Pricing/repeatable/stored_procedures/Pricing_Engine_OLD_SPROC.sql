@@ -1,5 +1,3 @@
-{# USE [SRA] #}
-{# GO #}
 /****** Object:  StoredProcedure [IHD].[Pricing_Engine_Proc]    Script Date: 11/17/2023 3:56:22 PM ******/
 SET ANSI_NULLS ON
 GO
