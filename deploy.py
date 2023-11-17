@@ -56,14 +56,17 @@ def execute_sql_script(file_path, cursor, conn):
 
         # Check the file path and execute the corresponding SQL command
         if 'create_table' in file_path:
+            print('Starting Create Table')
             cursor.execute(sql_script)
             conn.commit()
             print(f"Output of {file_path}:\n")
         elif 'insert_data' in file_path:
+            print('Starting INSERT DATA FUNCTION')
             cursor.execute(sql_script)
             conn.commit()
             print(f"Data inserted from {file_path}")
         elif 'stored_procedures' in file_path:
+            print('Starting Stored Procedure file')
             cursor.execute(sql_script)
             print(f"Stored procedure executed from {file_path}")
     except pyodbc.Error as e:
