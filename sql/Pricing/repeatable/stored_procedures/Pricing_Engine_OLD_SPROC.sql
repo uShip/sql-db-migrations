@@ -1,8 +1,6 @@
+
 /****** Object:  StoredProcedure [IHD].[Pricing_Engine_Proc]    Script Date: 11/17/2023 3:56:22 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE OR ALTER proc [dbo].[Pricing_Engine_Proc] as
 
 /*****************************************************************************************************************/
