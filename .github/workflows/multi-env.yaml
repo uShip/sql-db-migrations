@@ -46,14 +46,14 @@ jobs:
         ODBC_VERSION: 17
       shell: bash
 
-    - name: Fix SQL files
-      run: |
-        sqlfluff fix --dialect tsql . --exclude-rules RF04,LF05
+    # - name: Fix SQL files
+    #   run: |
+    #     sqlfluff fix --dialect tsql . --exclude-rules RF04,LF05
 
-    - name: Check for changes
-      id: git-check
-      run: |
-        git diff --exit-code || echo "::set-output name=changes::true"
+    # - name: Check for changes
+    #   id: git-check
+    #   run: |
+    #     git diff --exit-code || echo "::set-output name=changes::true"
 
     # - name: Commit and push if changes
     #   if: steps.git-check.outputs.changes == 'true'
