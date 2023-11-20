@@ -14,7 +14,7 @@ jobs:
     runs-on: [self-hosted, uship-linux]
     strategy:
       matrix:
-        env: [dev]
+        env: [devPricing, prod]
 
     steps:
       - uses: actions/checkout@v3
