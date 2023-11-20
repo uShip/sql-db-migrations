@@ -1,0 +1,29 @@
+name: Database Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to (prod, dev, qa, sandbox)'
+        required: true
+        default: 'dev'
+
+jobs:
+  setup:
+    uses: ./.github/workflows/setup-environment.yaml
+    with:
+      environment: ${{ github.event.inputs.environment }}
+
+  deploy:
+    needs: setup 
+    runs-on: [self-hosted, uship-linux] 
+    steps:
+
+      - name: Run Flyway Migrations
+        env:
+          FLYWAY_URL: ${{ secrets.JDBC_URL }}
+          FLYWAY_USER: ${{ secrets.DB_USER }}
+          FLYWAY_PASSWORD: ${{ secrets.DB_PASS }}
+        run: |
+          echo "Running Flyway migrations"
+          sudo -E flyway info
