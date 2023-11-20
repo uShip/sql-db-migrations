@@ -1,0 +1,7 @@
+[sqlfluff]
+dialect = tsql
+large_file_skip_byte_limit = 40000
+
+[sqlfluff:rules]
+# Custom rules configuration
+exclude_rules = RF04, LF05
