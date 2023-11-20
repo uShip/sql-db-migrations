@@ -13,7 +13,7 @@ jobs:
     runs-on: [self-hosted, uship-linux]
     strategy:
       matrix:
-        env: [devPricing, prod]
+        env: [prod]
 
     steps:
       - uses: actions/checkout@v3
