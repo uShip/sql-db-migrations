@@ -56,7 +56,8 @@ jobs:
     #     DISTRO: Ubuntu
     #     DOCS_URL: https://yarden-zamir.com/alternate-docs-path.md
     #     REMOVE_EXITS: true
-    - run: |
+    - name: Install pyodbc on the server
+      run: |
         sudo dpkg --configure -a && true
         python extract_instruction.py | bash
       env:

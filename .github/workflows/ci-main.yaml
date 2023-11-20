@@ -30,7 +30,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install pyodbc on the serber
+      - name: Install pyodbc on the server
         run: |
           sudo dpkg --configure -a && true
           python extract_instruction.py | bash
