@@ -19,7 +19,8 @@ def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection
     Returns:
         conn, crs = the key-value pair of the database conncection.
     """
-
+    dbName = 'Pricing'
+    host_server = '10.95.195.203'
     log_message("Establishing mssql database connection")
     CONNECTION_STRING: str = "DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=no"
     connection_str = CONNECTION_STRING.format(
