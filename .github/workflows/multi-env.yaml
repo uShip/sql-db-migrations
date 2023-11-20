@@ -9,6 +9,9 @@ on:
         options:
           - devPricing
           - dev
+          - prod
+          - qa
+          - sandbox
         required: true
         default: 'devPricing'
 
@@ -17,7 +20,6 @@ jobs:
     runs-on: [self-hosted, uship-linux]
     environment:
       name: ${{ github.event.inputs.environment }}
-
 
     steps:
     - uses: actions/checkout@v3
@@ -72,7 +74,7 @@ jobs:
         esac
 
     - name: Run Python script
-      run: python deploy.py ${{ env.MODIFIED_SQL }}
+      run: python deploy.py
       env:
         DB_SERVER: ${{ secrets.DB_SERVER }}
         DB_NAME: ${{ secrets.DATABASE }}

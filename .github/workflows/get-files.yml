@@ -82,7 +82,7 @@ jobs:
 
 
     - name: Run Python script
-      run: python deploy.py ${{ env.MODIFIED_SQL }}
+      run: python deploy.py #${{ env.MODIFIED_SQL }}
       env:
         DB_SERVER: ${{ secrets.DB_SERVER }}
         DB_NAME: ${{ secrets.DATABASE }}
