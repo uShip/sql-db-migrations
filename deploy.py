@@ -31,7 +31,7 @@ def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection
         log_message("Connected to Database")
         return conn, crs
     except (pyodbc.Error, pyodbc.OperationalError) as e:
-        log_message("Failed to connect to the Database: %s", e)
+        log_message("Failed to connect to the Database: {}".format(e))
         raise Exception("Database connection timed out or failed") from e
 
 def DestroyDBConnections(conn, crs):
@@ -44,7 +44,7 @@ def find_sql_files(start_path):
     """Recursively find all .sql files in the given directory."""
     return glob.glob(start_path + '/**/*.sql', recursive=True)
 
-def log_message(message):
+def log_message(message, *args):
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     print(f"{timestamp} - {message}")
 
