@@ -1,4 +1,4 @@
-name: Python Script Workflow
+name: Test Python Script Workflow Deployment
 
 # on: [push]
 on:
