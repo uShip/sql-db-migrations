@@ -6,5 +6,5 @@ tar -zxvf openssl-1.1.1p.tar.gz
 cd openssl-1.1.1p
 ./config
 make
-make install
-ldconfig
+sudo make install
+sudo ldconfig
