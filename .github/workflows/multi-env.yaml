@@ -48,7 +48,7 @@ jobs:
         DISTRO: "Ubuntu"
         REMOVE_EXITS: 'true'
         DOCS_URL: "https://raw.githubusercontent.com/MicrosoftDocs/sql-docs/live/docs/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server.md"
-        ODBC_VERSION: 17
+        ODBC_VERSION: 18
       shell: bash
 
     # - name: Fix SQL files

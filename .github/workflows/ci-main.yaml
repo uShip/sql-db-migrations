@@ -34,16 +34,16 @@ jobs:
         run: |
           sudo dpkg --configure -a && true
           # Install wget if it's not available
-          sudo apt-get update && sudo apt-get install -y wget
+          # sudo apt-get update && sudo apt-get install -y wget
           # Run the OpenSSL installation script
-          chmod +x ./install_openssl.sh
-          ./install_openssl.sh
+          # chmod +x ./install_openssl.sh
+          # ./install_openssl.sh
           python extract_pyodbc.py | bash
         env:
           DISTRO: "Ubuntu"
           REMOVE_EXITS: 'true'
           DOCS_URL: "https://raw.githubusercontent.com/MicrosoftDocs/sql-docs/live/docs/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server.md"
-          ODBC_VERSION: 17
+          ODBC_VERSION: 18
         shell: bash
 
       # - name: Fix SQL files
