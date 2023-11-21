@@ -23,7 +23,7 @@ jobs:
       - name: Set up Python 3.10.6
         uses: actions/setup-python@v3
         with:
-          python-version: 3.8
+          python-version: 3.9
 
       - name: Install Requirements and Dependencies
         run: |
@@ -33,7 +33,19 @@ jobs:
       - name: Install pyodbc on the server
         run: |
           sudo dpkg --configure -a && true
-          python extract_instruction.py | bash
+          # Install OpenSSL
+          wget https://www.openssl.org/source/openssl-1.1.1p.tar.gz -O openssl-1.1.1p.tar.gz
+          tar -zxvf openssl-1.1.1p.tar.gz
+          cd openssl-1.1.1p
+          ./config
+          make
+          make install
+          ldconfig
+          # Return to the previous directory
+          cd ..
+          # Install Microsoft SQL Server ODBC drivers
+          python extract_pyodbc.py | bash
+
         env:
           DISTRO: "Ubuntu"
           REMOVE_EXITS: 'true'
