@@ -54,8 +54,12 @@ jobs:
 
       - name: Modify OpenSSL Config
         run: |
-          sudo sed -i 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1.0/' /etc/ssl/openssl.cnf
-          sudo sed -i 's/CipherString = DEFAULT@SECLEVEL=2/CipherString = DEFAULT@SECLEVEL=1/' /etc/ssl/openssl.cnf
+          # sudo sed -i 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1.0/' /etc/ssl/openssl.cnf
+          # sudo sed -i 's/CipherString = DEFAULT@SECLEVEL=2/CipherString = DEFAULT@SECLEVEL=1/' /etc/ssl/openssl.cnf
+
+          sudo chmod +rwx /etc/ssl/openssl.cnf
+          sudo sed -i 's/TLSv1.2/TLSv1/g' /etc/ssl/openssl.cnf
+          sudo sed -i 's/SECLEVEL=2/SECLEVEL=1/g' /etc/ssl/openssl.cnf
 
 
       # - name: Fix SQL files
