@@ -21,7 +21,7 @@ def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection
     """
 
     log_message("Establishing mssql database connection")
-    CONNECTION_STRING: str = "DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=no"
+    CONNECTION_STRING: str = "DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=no"
     connection_str = CONNECTION_STRING.format(
         server=host_server, database=dbName, username=userName, password=userPassword
     )
