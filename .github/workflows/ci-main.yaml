@@ -39,18 +39,25 @@ jobs:
           # chmod +x ./install_openssl.sh
           # ./install_openssl.sh
           python extract_pyodbc.py | bash
+          pip install pyodbc
         env:
           DISTRO: "Ubuntu"
           REMOVE_EXITS: 'true'
           DOCS_URL: "https://raw.githubusercontent.com/MicrosoftDocs/sql-docs/live/docs/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server.md"
           ODBC_VERSION: 18
         shell: bash
+      - name: Configure OpenSSL Defaults
+        run: |
+          echo '[system_default_sect]\nMinProtocol = TLSv1\nCipherString = DEFAULT@SECLEVEL=1' | sudo tee -a /etc/ssl/openssl.cnf
 
-      # - name: Update OpenSSL
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y openssl
-      #     openssl version
+      - name: Set up ODBC
+        run: |
+          echo 'export CONNECTION_STRING="$CONNECTION_STRING"' >> $GITHUB_ENV
+        env:
+          CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
+      - name: Test SQL Connection
+        run: |
+          isql -v -k "$CONNECTION_STRING"
 
       - name: Modify OpenSSL Config
         run: |
