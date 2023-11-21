@@ -46,6 +46,11 @@ jobs:
           ODBC_VERSION: 18
         shell: bash
 
+      - name: Update OpenSSL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssl
+          openssl version
       # - name: Fix SQL files
       #   run: |
       #     sqlfluff fix --dialect tsql . --exclude-rules RF04,LF05
