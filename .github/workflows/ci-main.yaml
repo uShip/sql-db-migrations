@@ -57,6 +57,10 @@ jobs:
           CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
       - name: Test SQL Connection
         run: |
+          export ODBCINI=/etc/odbc.ini
+          export ODBCSYSINI=/etc
+          export CONNECTION_STRING="Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
+          isql -v DSN_name
           isql -v -k "$CONNECTION_STRING"
 
       - name: Modify OpenSSL Config
