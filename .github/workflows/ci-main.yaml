@@ -60,18 +60,11 @@ jobs:
           export ODBCINI=/etc/odbc.ini
           export ODBCSYSINI=/etc
 
-      - name: Test SQL Connection
-        run: |
-          export CONNECTION_STRING="Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
-          isql -v DSN_name
-          # isql -v -k "$CONNECTION_STRING" &>> isql_conn_logs.txt
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: connection-logs
-          path: |
-            isql_dsn_logs.txt
-            isql_conn_logs.txt
+      # - name: Test SQL Connection
+      #   run: |
+      #     export CONNECTION_STRING="Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
+      #     isql -v DSN_name
+      #     # isql -v -k "$CONNECTION_STRING"
 
       - name: Modify OpenSSL Config
         run: |
