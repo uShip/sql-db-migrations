@@ -1,9 +1,19 @@
 name: Deploy to Database
 
 on:
-  push:
-    branches:
-      - main
+    workflow_dispatch:
+      inputs:
+        environment:
+          type: choice
+          description: 'Environment to deploy to (prod, dev, qa, sandbox)'
+          options:
+            - devPricing
+            - dev
+            - prod
+            - qa
+            - sandbox
+          required: true
+          default: 'devPricing'
 
 env:
   commit: ${{ github.sha }}
