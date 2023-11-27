@@ -49,12 +49,11 @@ jobs:
     - name: Install pyodbc on the server
       run: |
         sudo dpkg --configure -a && true
-        # Install wget if it's not available
-        sudo apt-get update && sudo apt-get install -y wget
-        # Run the OpenSSL installation script
-        chmod +x ./install_openssl.sh
-        ./install_openssl.sh
+        # sudo apt-get update && sudo apt-get install -y wget # Install wget if it's not available
+        # chmod +x ./install_openssl.sh # Run the OpenSSL installation script
+        # ./install_openssl.sh
         python extract_pyodbc.py | bash
+        pip install pyodbc
       env:
         DISTRO: "Ubuntu"
         REMOVE_EXITS: 'true'
