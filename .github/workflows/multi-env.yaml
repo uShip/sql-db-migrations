@@ -87,9 +87,29 @@ jobs:
       env:
         CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
 
-    #Upload to SQL
+
+    - name: Get modified SQL files
+      id: modified-sql-files
+      run: |
+        # Get the list of modified files between main and the current branch
+        MODIFIED_FILES=$(git diff --name-only main)
+
+        # Filter files that end with ".SQL"
+        SQL_FILES=($(echo "$MODIFIED_FILES" | grep '\.SQL$'))
+
+        # Pass the filtered list to the next step
+        echo "::set-output name=sql-files::${SQL_FILES[*]}"
+
+    # Upload to SQL
     - name: Run Python script
-      run: python deploy.py
+      run: |
+        # Access the filtered SQL files from the previous step's output
+        SQL_FILES="${{ steps.modified-sql-files.outputs.sql-files }}"
+
+        # Pass the list of SQL files to a Python script
+        python deploy.py "$SQL_FILES"
+
+      # run: python deploy.py
       env:
         DB_SERVER: ${{ secrets.DB_SERVER }}
         DB_NAME: ${{ secrets.DATABASE }}
