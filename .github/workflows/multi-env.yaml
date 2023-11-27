@@ -113,6 +113,7 @@ jobs:
         # Get the list of modified files between the base branch and the current branch
         echo "Modified SQL files: Debugg 5"
         MODIFIED_FILES=$(git diff --name-only $GITHUB_BASE_REF $GITHUB_HEAD_REF)
+        echo "$MODIFIED_FILES"
 
         # Filter files that end with ".SQL"
         echo "Modified SQL files: Debugg 6"
