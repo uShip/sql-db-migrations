@@ -23,7 +23,7 @@ jobs:
       - name: Set up Python 3.10.6
         uses: actions/setup-python@v3
         with:
-          python-version: 3.8
+          python-version: 3.10.6
 
       - name: Install Requirements and Dependencies
         run: |
@@ -33,10 +33,8 @@ jobs:
       - name: Install pyodbc on the server
         run: |
           sudo dpkg --configure -a && true
-          # Install wget if it's not available
-          # sudo apt-get update && sudo apt-get install -y wget
-          # Run the OpenSSL installation script
-          # chmod +x ./install_openssl.sh
+          # sudo apt-get update && sudo apt-get install -y wget # Install wget if it's not available
+          # chmod +x ./install_openssl.sh # Run the OpenSSL installation script
           # ./install_openssl.sh
           python extract_pyodbc.py | bash
           pip install pyodbc
@@ -47,8 +45,11 @@ jobs:
           ODBC_VERSION: 18
         shell: bash
 
-      - name: Configure OpenSSL Defaults
+      - name: Modify and Configure OpenSSL
         run: |
+          sudo chmod +rwx /etc/ssl/openssl.cnf
+          sudo sed -i 's/TLSv1.2/TLSv1/g' /etc/ssl/openssl.cnf
+          sudo sed -i 's/SECLEVEL=2/SECLEVEL=0/g' /etc/ssl/openssl.cnf
           echo '[system_default_sect]\nMinProtocol = TLSv1.0\nCipherString = DEFAULT@SECLEVEL=0' | sudo tee -a /etc/ssl/openssl.cnf
 
       - name: Set up ODBC
@@ -56,17 +57,11 @@ jobs:
           echo 'export CONNECTION_STRING="$CONNECTION_STRING TrustServerCertificate=yes"' >> $GITHUB_ENV
         env:
           CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
-      - name: Test SQL Connection
-        run: |
-          export ODBCINI=/etc/odbc.ini
-          export ODBCSYSINI=/etc
 
-      - name: Modify OpenSSL Config
-        run: |
-          sudo chmod +rwx /etc/ssl/openssl.cnf
-          sudo sed -i 's/TLSv1.2/TLSv1/g' /etc/ssl/openssl.cnf
-          sudo sed -i 's/SECLEVEL=2/SECLEVEL=0/g' /etc/ssl/openssl.cnf
-
+      # - name: Test SQL Connection
+      #   run: |
+      #     export ODBCINI=/etc/odbc.ini
+      #     export ODBCSYSINI=/etc
 
       # - name: Fix SQL files
       #   run: |
@@ -116,13 +111,3 @@ jobs:
     #     FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
     #   run: |
     #     sudo -E flyway info
-
-  # rollback:
-  #   runs-on: [self-hosted, uship-linux]
-
-  #   steps:
-  #   - uses: actions/checkout@v3
-
-  #   - name: Rollback changes
-  #     run: |
-  #       #
