@@ -6,7 +6,7 @@ from datetime import datetime
 # from db_conn import connect_db, DestroyDBConnections
 
 # Get the current date
-current_date = date.today()
+current_date = datetime.date.today()
 
 
 def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection:
