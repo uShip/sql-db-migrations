@@ -97,6 +97,7 @@ def main(db_server, db_name, username, password, repo_path):
         for file in files:
             if file.endswith('.sql'):
                 file_path = os.path.join(root, file)
+                print(f'{file_path} : {date.fromtimestamp(os.path.getmtime(file_path))}')
                 # Get the modification time of the file
                 file_modified_date = date.fromtimestamp(os.path.getmtime(file_path))
                 # Check if the file was modified or created today
