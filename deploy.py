@@ -5,6 +5,9 @@ import glob
 from datetime import datetime
 # from db_conn import connect_db, DestroyDBConnections
 
+# Get the current date
+current_date = date.today()
+
 
 def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection:
     """
@@ -94,7 +97,11 @@ def main(db_server, db_name, username, password, repo_path):
         for file in files:
             if file.endswith('.sql'):
                 file_path = os.path.join(root, file)
-                execute_sql_script(file_path, crs, conn)
+                # Get the modification time of the file
+                modification_time = datetime.date.fromtimestamp(os.path.getmtime(file_path))
+                # Check if the file was modified or created today
+                if file_modified_date == current_date:
+                    execute_sql_script(file_path, crs, conn)
 
     # for sql_file in sql_files:
     #     print(f'starting {sql_file}')
