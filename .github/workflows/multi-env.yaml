@@ -119,11 +119,12 @@ jobs:
         SQL_FILES=($(echo "$MODIFIED_FILES" | grep '\.SQL$'))
 
         # Debugging: Show the list of SQL files
-        echo "Modified SQL files:"
-        echo "${SQL_FILES[*]}"
+        echo "Modified SQL files: Debugg 7"
+        echo "Modified SQL files: ${SQL_FILES[*]}"
 
         # Pass the filtered list to the next step
-        echo "::set-output name=sql-files::${SQL_FILES[*]}"
+        echo "Modified SQL files: Debugg 8"
+        echo "sql-files = ${SQL_FILES[*]}" >> $GITHUB_OUTPUT
 
     # Upload to SQL
     - name: Run Python script
