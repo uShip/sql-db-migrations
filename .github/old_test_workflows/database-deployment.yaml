@@ -15,8 +15,8 @@ jobs:
       environment: ${{ github.event.inputs.environment }}
 
   deploy:
-    needs: setup 
-    runs-on: [self-hosted, uship-linux] 
+    needs: setup
+    runs-on: [self-hosted, uship-linux]
     steps:
 
       - name: Run Flyway Migrations
