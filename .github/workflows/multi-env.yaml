@@ -91,11 +91,26 @@ jobs:
     - name: Get modified SQL files
       id: modified-sql-files
       run: |
+        # Debugging: Show the current branch and remotes
+        git branch
+        git remote -v
+
+        # Fetch the latest changes from the remote repository
+        git fetch origin main
+
+        # Debugging: Show the branches after fetch
+        git branch
+        git remote -v
+
         # Get the list of modified files between main and the current branch
         MODIFIED_FILES=$(git diff --name-only origin/main)
 
         # Filter files that end with ".SQL"
         SQL_FILES=($(echo "$MODIFIED_FILES" | grep '\.SQL$'))
+
+        # Debugging: Show the list of SQL files
+        echo "Modified SQL files:"
+        echo "${SQL_FILES[*]}"
 
         # Pass the filtered list to the next step
         echo "::set-output name=sql-files::${SQL_FILES[*]}"
