@@ -96,15 +96,15 @@ jobs:
         USERNAME: ${{ secrets.DB_USER }}
         PASSWORD: ${{ secrets.DB_PASS }}
 
-    #Alert in Slack
-    - uses: 8398a7/action-slack@v2
-      if: always()
-      with:
-        status: ${{ job.status }}
-        author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
-      env:
-        # GITHUB_TOKEN: ${{ secrets.SLACK_GITHUB_TOKEN }}
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    # #Alert in Slack
+    # - uses: 8398a7/action-slack@v2
+    #   if: always()
+    #   with:
+    #     status: ${{ job.status }}
+    #     author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
+    #   env:
+    #     # GITHUB_TOKEN: ${{ secrets.SLACK_GITHUB_TOKEN }}
+    #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     # OLD FLYWAY Github actions
     # - uses: actions/checkout@v3
