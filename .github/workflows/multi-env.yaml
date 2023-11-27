@@ -92,7 +92,7 @@ jobs:
       id: modified-sql-files
       run: |
         # Get the list of modified files between main and the current branch
-        MODIFIED_FILES=$(git diff --name-only main)
+        MODIFIED_FILES=$(git diff --name-only origin/main)
 
         # Filter files that end with ".SQL"
         SQL_FILES=($(echo "$MODIFIED_FILES" | grep '\.SQL$'))
