@@ -30,6 +30,17 @@ jobs:
       with:
         python-version: 3.8
 
+    - name: Validate environment
+      run: |
+        echo "Selected environment: ${{ github.event.inputs.environment }}"
+        case "${{ github.event.inputs.environment }}" in prod|dev|qa|sandbox|devPricing)
+            echo "Deploying to ${{ github.event.inputs.environment }}"
+            ;;*)
+            echo "Error: Invalid environment selected. Allowed values are prod, dev, qa, or sandbox"
+            exit 1
+            ;;
+        esac
+
     - name: Install Requirements and Dependencies
       run: |
         python -m pip install --upgrade pip
@@ -67,16 +78,16 @@ jobs:
     #     git commit -m "Auto-fix SQL files" -a || echo "No changes to commit"
     #     git push
 
-    - name: Validate environment
+    - name: Modify/Configure OpenSSL, ODBC connection String
       run: |
-        echo "Selected environment: ${{ github.event.inputs.environment }}"
-        case "${{ github.event.inputs.environment }}" in prod|dev|qa|sandbox|devPricing)
-            echo "Deploying to ${{ github.event.inputs.environment }}"
-            ;;*)
-            echo "Error: Invalid environment selected. Allowed values are prod, dev, qa, or sandbox"
-            exit 1
-            ;;
-        esac
+        sudo chmod +rwx /etc/ssl/openssl.cnf
+        sudo sed -i 's/TLSv1.2/TLSv1/g' /etc/ssl/openssl.cnf
+        sudo sed -i 's/SECLEVEL=2/SECLEVEL=0/g' /etc/ssl/openssl.cnf
+        echo '[system_default_sect]\nMinProtocol = TLSv1.0\nCipherString = DEFAULT@SECLEVEL=0' | sudo tee -a /etc/ssl/openssl.cnf
+        echo 'export CONNECTION_STRING="$CONNECTION_STRING TrustServerCertificate=yes"' >> $GITHUB_ENV
+      env:
+        CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
+
 
     - name: Run Python script
       run: python deploy.py

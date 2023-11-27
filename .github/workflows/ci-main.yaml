@@ -45,15 +45,12 @@ jobs:
           ODBC_VERSION: 18
         shell: bash
 
-      - name: Modify and Configure OpenSSL
+      - name: Modify/Configure OpenSSL, ODBC connection String
         run: |
           sudo chmod +rwx /etc/ssl/openssl.cnf
           sudo sed -i 's/TLSv1.2/TLSv1/g' /etc/ssl/openssl.cnf
           sudo sed -i 's/SECLEVEL=2/SECLEVEL=0/g' /etc/ssl/openssl.cnf
           echo '[system_default_sect]\nMinProtocol = TLSv1.0\nCipherString = DEFAULT@SECLEVEL=0' | sudo tee -a /etc/ssl/openssl.cnf
-
-      - name: Set up ODBC
-        run: |
           echo 'export CONNECTION_STRING="$CONNECTION_STRING TrustServerCertificate=yes"' >> $GITHUB_ENV
         env:
           CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
