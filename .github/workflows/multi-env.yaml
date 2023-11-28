@@ -102,39 +102,11 @@ jobs:
         echo "One or more files in the docs folder has changed."
         echo "List all the files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
 
-      # id: modified-sql-files
-      # run: |
-
-      #   # Fetch the latest changes from the remote repository
-      #   echo "Modified SQL files: Debugg 4"
-      #   git fetch origin $GITHUB_BASE_REF:$GITHUB_BASE_REF
-      #   git fetch origin $GITHUB_HEAD_REF:$GITHUB_HEAD_REF
-
-      #   # Get the list of modified files between the base branch and the current branch
-      #   echo "Modified SQL files: Debugg 5"
-      #   MODIFIED_FILES=$(git diff --name-only $GITHUB_BASE_REF $GITHUB_HEAD_REF)
-      #   echo "MODIFIED_FILES: $MODIFIED_FILES"
-
-      #   # Filter files that end with ".SQL"
-      #   echo "Modified SQL files: Debugg 6"
-      #   SQL_FILES=($(echo "$MODIFIED_FILES" | grep '\.SQL$'))
-
-      #   # Debugging: Show the list of SQL files
-      #   echo "Modified SQL files: Debugg 7"
-      #   echo "Modified SQL files: ${SQL_FILES[*]}"
-
-      #   # Pass the filtered list to the next step
-      #   echo "Modified SQL files: Debugg 8"
-      #   echo "sql-files = ${SQL_FILES[*]}" >> $GITHUB_OUTPUT
-
     # Upload to SQL
     - name: Run Python script
-      run: |
-        # Access the filtered SQL files from the previous step's output
-        SQL_FILES="${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
-
+      run:
         # Pass the list of SQL files to a Python script
-        python deploy.py "$SQL_FILES"
+        python deploy.py
 
       # run: python deploy.py
       env:
@@ -142,6 +114,7 @@ jobs:
         DB_NAME: ${{ secrets.DATABASE }}
         USERNAME: ${{ secrets.DB_USER }}
         PASSWORD: ${{ secrets.DB_PASS }}
+        SQL_FILES: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}
 
     # #Alert in Slack
     # - uses: 8398a7/action-slack@v2

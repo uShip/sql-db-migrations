@@ -91,7 +91,7 @@ def main(db_server, db_name, username, password, sql_files):
     conn, crs = connect_db(db_server, db_name, username, password)
     # Get list of .sql files in specified directory, sorted alphabetically
 
-    base_folder_path = 'sql/Pricing'
+    # base_folder_path = 'sql/Pricing'
 
     # for root, dirs, files in os.walk(base_folder_path):
     #     for file in files:
