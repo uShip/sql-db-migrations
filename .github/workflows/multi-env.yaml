@@ -96,10 +96,6 @@ jobs:
           **/*.{sh,sql,py}
         write_output_files: true
 
-    - name: Verify the contents of the .github/outputs/added_files.txt file
-      run: |
-        cat .github/outputs/added_files.txt
-
     - name: Run step if any file(s) in the docs folder change
       if: steps.changed-files-specific.outputs.any_changed == 'true'
       run: |
@@ -135,7 +131,7 @@ jobs:
     - name: Run Python script
       run: |
         # Access the filtered SQL files from the previous step's output
-        SQL_FILES="${{ steps.modified-sql-files.outputs.sql-files }}"
+        SQL_FILES="${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
 
         # Pass the list of SQL files to a Python script
         python deploy.py "$SQL_FILES"
