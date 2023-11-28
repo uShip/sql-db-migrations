@@ -108,7 +108,7 @@ def main(db_server, db_name, username, password, sql_files):
     for sql_file in sql_files:
         if sql_file.endswith('.sql'):
             print(f'starting {sql_file}')
-            execute_sql_file(sql_file)
+            execute_sql_script(sql_file, crs, conn)
 
     # Close the cursor and connection
     crs.close()
