@@ -55,34 +55,47 @@ jobs:
         env:
           CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
 
-      # - name: Test SQL Connection
-      #   run: |
-      #     export ODBCINI=/etc/odbc.ini
-      #     export ODBCSYSINI=/etc
-
       # - name: Fix SQL files
       #   run: |
       #     sqlfluff fix --dialect tsql . --exclude-rules RF04,LF05
 
-      # - name: Check for changes
-      #   id: git-check
-      #   run: |
-      #     git diff --exit-code || echo "::set-output name=changes::true"
+      - name: Get modified SQL files
+        id: changed-files-specific
+        uses: tj-actions/changed-files@v40
+        with:
+          files: |
+            **/*.{sh,sql,py}
+          write_output_files: true
 
-      # - name: Commit and push if changes
-      #   if: steps.git-check.outputs.changes == 'true'
-      #   run: |
-      #     git add -A
-      #     git commit -m "Auto-fix SQL files" -a || echo "No changes to commit"
-      #     git push
+      - name: Run step if any file(s) in the docs folder change
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        run: |
+          echo "One or more files in the docs folder has changed."
+          echo "List all the files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
 
+      # Upload to SQL
       - name: Run Python script
-        run: python deploy.py
+        run:
+          # Pass the list of SQL files to a Python script
+          python deploy.py
+
+        # run: python deploy.py
         env:
           DB_SERVER: ${{ secrets.DB_SERVER }}
           DB_NAME: ${{ secrets.DATABASE }}
           USERNAME: ${{ secrets.DB_USER }}
           PASSWORD: ${{ secrets.DB_PASS }}
+          SQL_FILES: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}
+
+      #Alert in Slack
+      - uses: 8398a7/action-slack@v2
+        if: always()
+        with:
+          status: ${{ job.status }}
+          author_name: DB-MIGRATION-${{ matrix.env}}
+        env:
+          # GITHUB_TOKEN: ${{ secrets.SLACK_GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       #Alert in Slack
       - uses: 8398a7/action-slack@v2

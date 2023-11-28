@@ -2,8 +2,11 @@ import os
 import sys
 import pyodbc
 import glob
-from datetime import datetime
+from datetime import datetime, date
 # from db_conn import connect_db, DestroyDBConnections
+
+# Get the current date
+current_date = date.today()
 
 
 def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection:
@@ -83,22 +86,29 @@ def execute_sql_script(file_path, cursor, conn):
         # Continue with the next file
 
 
-def main(db_server, db_name, username, password, repo_path):
+def main(db_server, db_name, username, password, sql_files):
     # Create connection string
     conn, crs = connect_db(db_server, db_name, username, password)
     # Get list of .sql files in specified directory, sorted alphabetically
 
-    base_folder_path = 'sql/Pricing'
+    # base_folder_path = 'sql/Pricing'
 
-    for root, dirs, files in os.walk(base_folder_path):
-        for file in files:
-            if file.endswith('.sql'):
-                file_path = os.path.join(root, file)
-                execute_sql_script(file_path, crs, conn)
+    # for root, dirs, files in os.walk(base_folder_path):
+    #     for file in files:
+    #         if file.endswith('.sql'):
+    #             file_path = os.path.join(root, file)
+    #             print(f'{file_path} : {date.fromtimestamp(os.path.getmtime(file_path))}')
+    #             # Get the modification time of the file
+    #             file_modified_date = date.fromtimestamp(os.path.getmtime(file_path))
+    #             # Check if the file was modified or created today
+    #             if file_modified_date == current_date:
+    #                 execute_sql_script(file_path, crs, conn)
 
-    # for sql_file in sql_files:
-    #     print(f'starting {sql_file}')
-    #     execute_sql_file(sql_file)
+
+    for sql_file in sql_files:
+        if sql_file.endswith('.sql'):
+            print(f'starting {sql_file}')
+            execute_sql_script(sql_file, crs, conn)
 
     # Close the cursor and connection
     crs.close()
@@ -121,4 +131,10 @@ if __name__ == "__main__":
     repo_path = os.getenv('REPO_PATH', '.')
     # sql_files = sys.argv[1:]
 
-    main(db_server, db_name, username, password, repo_path)
+    # Parse the list of SQL files passed as a space-separated string
+    sql_files_str = os.getenv('SQL_FILES', '')
+    sql_files = sql_files_str.split() if sql_files_str else []
+
+    main(db_server, db_name, username, password, sql_files)
+
+    # main(db_server, db_name, username, password, repo_path)

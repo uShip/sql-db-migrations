@@ -1,0 +1,30 @@
+name: Notify on Merge to Main
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  notify_slack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if PR was merged into main
+        id: check_merge
+        run: echo ::set-output name=merged::${{ github.event.pull_request.merged }}
+
+      - name: Notify Slack
+        if: steps.check_merge.outputs.merged == 'true'
+        env:
+          SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
+        run: |
+          curl -X POST -H "Content-type: application/json" --data '{
+            "text": "Changes merged to Main. Your team needs to review deployments in GitHub Actions to deploy to all other environments."
+          }' https://slack.com/api/chat.postMessage
+
+        # env:
+        #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        # run: |
+        #     MESSAGE="Changes merged to Main. Your team has to review deployments in GitHub Actions to deploy to all other environments."
+        #     curl -X POST -H 'Content-type: application/json' --data "{'text':'$MESSAGE'}" $SLACK_WEBHOOK_URL
