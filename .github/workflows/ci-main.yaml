@@ -71,15 +71,11 @@ jobs:
             echo "One or more SQL files have changed."
             echo "List all the SQL files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
             echo "Deploying functions..."
-            # Add your deployment logic here
+            # Run Python script
+            python deploy.py
           else
             echo "No SQL files have changed. Skipping deployment."
           fi
-
-      # Upload to SQL
-      - name: Run Python script
-        if: steps.check-sql-changed.outputs.any_changed == 'true'
-        run: python deploy.py
         env:
           DB_SERVER: ${{ secrets.DB_SERVER }}
           DB_NAME: ${{ secrets.DATABASE }}
