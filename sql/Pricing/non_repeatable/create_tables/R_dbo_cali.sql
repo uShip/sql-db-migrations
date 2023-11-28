@@ -12,7 +12,7 @@ IF
     )
     BEGIN
 
-        CREATE TABLE dbo.cali (
+        CREATE TABLE dbo.calloytrher (
             mmdd [varchar](5) NULL,
             day_date [datetime] NULL,
             day_week [float] NULL,
