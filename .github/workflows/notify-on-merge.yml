@@ -26,5 +26,5 @@ jobs:
         env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-            MESSAGE="Changes merged to Main. Your team has to review deployments in GitHub Actions to deploy to all other environments."
+            MESSAGE="@here A new Pull request is merged to Main branch with new changes. Data team, Please review and approve for deployment in GitHub Actions to deploy to all environments."
             curl -X POST -H 'Content-type: application/json' --data "{'text':'$MESSAGE'}" $SLACK_WEBHOOK_URL
