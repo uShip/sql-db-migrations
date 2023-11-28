@@ -12,7 +12,7 @@ IF
     )
     BEGIN
 
-        CREATE TABLE dbo.bb_v6 (
+        CREATE OR ALTER TABLE dbo.bb_v6 (
             bb_rating [int] NOT NULL,
             bb_surcharged [float] NULL,
             bb_surchargep [float] NULL,

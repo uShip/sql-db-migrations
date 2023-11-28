@@ -94,12 +94,17 @@ jobs:
       with:
         files: |
           **/*.{sh,sql,py}
+        write_output_files: true
+
+    - name: Verify the contents of the .github/outputs/added_files.txt file
+      run: |
+        cat .github/outputs/added_files.txt
 
     - name: Run step if any file(s) in the docs folder change
       if: steps.changed-files-specific.outputs.any_changed == 'true'
       run: |
         echo "One or more files in the docs folder has changed."
-        echo "List all the files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_files }}"
+        echo "List all the files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
 
       # id: modified-sql-files
       # run: |
