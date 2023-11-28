@@ -65,18 +65,6 @@ jobs:
     #   run: |
     #     sqlfluff fix --dialect tsql . --exclude-rules RF04,LF05
 
-    # - name: Check for changes
-    #   id: git-check
-    #   run: |
-    #     git diff --exit-code || echo "::set-output name=changes::true"
-
-    # - name: Commit and push if changes
-    #   if: steps.git-check.outputs.changes == 'true'
-    #   run: |
-    #     git add -A
-    #     git commit -m "Auto-fix SQL files" -a || echo "No changes to commit"
-    #     git push
-
     - name: Modify/Configure OpenSSL, ODBC connection String
       run: |
         sudo chmod +rwx /etc/ssl/openssl.cnf
@@ -116,15 +104,15 @@ jobs:
         PASSWORD: ${{ secrets.DB_PASS }}
         SQL_FILES: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}
 
-    # #Alert in Slack
-    # - uses: 8398a7/action-slack@v2
-    #   if: always()
-    #   with:
-    #     status: ${{ job.status }}
-    #     author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
-    #   env:
-    #     # GITHUB_TOKEN: ${{ secrets.SLACK_GITHUB_TOKEN }}
-    #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    #Alert in Slack
+    - uses: 8398a7/action-slack@v2
+      if: always()
+      with:
+        status: ${{ job.status }}
+        author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
+      env:
+        # GITHUB_TOKEN: ${{ secrets.SLACK_GITHUB_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     # OLD FLYWAY Github actions
     # - uses: actions/checkout@v3
