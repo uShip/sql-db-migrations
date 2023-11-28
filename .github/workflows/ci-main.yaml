@@ -13,7 +13,7 @@ jobs:
     runs-on: [self-hosted, uship-linux]
     strategy:
       matrix:
-        env: [dev, prod]
+        env: [dev, qa, sanbox, prod]
     environment: ${{ matrix.env}}
 
     steps:
@@ -33,9 +33,6 @@ jobs:
       - name: Install pyodbc on the server
         run: |
           sudo dpkg --configure -a && true
-          # sudo apt-get update && sudo apt-get install -y wget # Install wget if it's not available
-          # chmod +x ./install_openssl.sh # Run the OpenSSL installation script
-          # ./install_openssl.sh
           python extract_pyodbc.py | bash
           pip install pyodbc
         env:
@@ -64,22 +61,25 @@ jobs:
         uses: tj-actions/changed-files@v40
         with:
           files: |
-            **/*.{sh,sql,py}
+            **/*.{sql,py}
           write_output_files: true
 
-      - name: Run step if any file(s) in the docs folder change
-        if: steps.changed-files-specific.outputs.any_changed == 'true'
+      - name: Check if SQL files changed
+        id: check-sql-changed
         run: |
-          echo "One or more files in the docs folder has changed."
-          echo "List all the files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
+          if [[ "${{ steps.changed-files-specific.outputs.any_changed }}" == 'true' ]]; then
+            echo "One or more SQL files have changed."
+            echo "List all the SQL files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
+            echo "Deploying functions..."
+            # Add your deployment logic here
+          else
+            echo "No SQL files have changed. Skipping deployment."
+          fi
 
       # Upload to SQL
       - name: Run Python script
-        run:
-          # Pass the list of SQL files to a Python script
-          python deploy.py
-
-        # run: python deploy.py
+        if: steps.check-sql-changed.outputs.any_changed == 'true'
+        run: python deploy.py
         env:
           DB_SERVER: ${{ secrets.DB_SERVER }}
           DB_NAME: ${{ secrets.DATABASE }}
@@ -96,28 +96,3 @@ jobs:
         env:
           # GITHUB_TOKEN: ${{ secrets.SLACK_GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-    # OLD FLYWAY
-    # steps:
-    # - uses: actions/checkout@v3
-
-    # - name: Set up Java
-    #   uses: actions/setup-java@v2
-    #   with:
-    #     java-version: 11
-    #     distribution: 'adopt'
-
-    # - name: Set up Flyway
-    #   run: |
-    #     curl -o /tmp/flyway.tar.gz https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.22.3/flyway-commandline-9.22.3-linux-x64.tar.gz
-    #     tar -xzf /tmp/flyway.tar.gz -C /tmp
-    #     sudo mv /tmp/flyway-9.22.3 /opt/flyway
-    #     sudo ln -s /opt/flyway/flyway /usr/local/bin/flyway
-
-    # - name: Test Database Connection with Flyway Info
-    #   env:
-    #     FLYWAY_URL: ${{secrets.DB_HOSTNAME}}
-    #     FLYWAY_USER: ${{secrets.DB_USER}}
-    #     FLYWAY_PASSWORD: ${{secrets.DB_PASS}}
-    #   run: |
-    #     sudo -E flyway info
