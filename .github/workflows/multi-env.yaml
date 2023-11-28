@@ -89,43 +89,42 @@ jobs:
 
 
     - name: Get modified SQL files
-      id: modified-sql-files
+      id: changed-files-specific
+      uses: tj-actions/changed-files@v40
+      with:
+        files: |
+          **/*.{sh,sql,py}
+
+    - name: Run step if any file(s) in the docs folder change
+      if: steps.changed-files-specific.outputs.any_changed == 'true'
       run: |
-        # Debugging: Show the current branch and remotes
-        echo "Modified SQL files: Debugg 1"
-        git branch
-        git remote -v
+        echo "One or more files in the docs folder has changed."
+        echo "List all the files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_files }}"
 
-        # Fetch the latest changes from the remote repository
-        echo "Modified SQL files: Debugg 2"
-        git fetch origin main
+      # id: modified-sql-files
+      # run: |
 
-        # Debugging: Show the branches after fetch
-        echo "Modified SQL files: Debugg 3"
-        git branch
-        git remote -v
+      #   # Fetch the latest changes from the remote repository
+      #   echo "Modified SQL files: Debugg 4"
+      #   git fetch origin $GITHUB_BASE_REF:$GITHUB_BASE_REF
+      #   git fetch origin $GITHUB_HEAD_REF:$GITHUB_HEAD_REF
 
-        # Fetch the latest changes from the remote repository
-        echo "Modified SQL files: Debugg 4"
-        git fetch origin $GITHUB_BASE_REF:$GITHUB_BASE_REF
-        git fetch origin $GITHUB_HEAD_REF:$GITHUB_HEAD_REF
+      #   # Get the list of modified files between the base branch and the current branch
+      #   echo "Modified SQL files: Debugg 5"
+      #   MODIFIED_FILES=$(git diff --name-only $GITHUB_BASE_REF $GITHUB_HEAD_REF)
+      #   echo "MODIFIED_FILES: $MODIFIED_FILES"
 
-        # Get the list of modified files between the base branch and the current branch
-        echo "Modified SQL files: Debugg 5"
-        MODIFIED_FILES=$(git diff --name-only $GITHUB_BASE_REF $GITHUB_HEAD_REF)
-        echo "$MODIFIED_FILES"
+      #   # Filter files that end with ".SQL"
+      #   echo "Modified SQL files: Debugg 6"
+      #   SQL_FILES=($(echo "$MODIFIED_FILES" | grep '\.SQL$'))
 
-        # Filter files that end with ".SQL"
-        echo "Modified SQL files: Debugg 6"
-        SQL_FILES=($(echo "$MODIFIED_FILES" | grep '\.SQL$'))
+      #   # Debugging: Show the list of SQL files
+      #   echo "Modified SQL files: Debugg 7"
+      #   echo "Modified SQL files: ${SQL_FILES[*]}"
 
-        # Debugging: Show the list of SQL files
-        echo "Modified SQL files: Debugg 7"
-        echo "Modified SQL files: ${SQL_FILES[*]}"
-
-        # Pass the filtered list to the next step
-        echo "Modified SQL files: Debugg 8"
-        echo "sql-files = ${SQL_FILES[*]}" >> $GITHUB_OUTPUT
+      #   # Pass the filtered list to the next step
+      #   echo "Modified SQL files: Debugg 8"
+      #   echo "sql-files = ${SQL_FILES[*]}" >> $GITHUB_OUTPUT
 
     # Upload to SQL
     - name: Run Python script
