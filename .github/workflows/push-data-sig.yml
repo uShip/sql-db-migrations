@@ -78,10 +78,10 @@ jobs:
         PASSWORD: ${{ secrets.DB_PASS }}
 
     # Alert in Slack
-    - name: Slack Notification
-      uses: 8398a7/action-slack@v2
-      if: always()
-      with:
-        status: ${{ job.status }}
-        author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
-        text: "This is in relation to pushing the data from snowflake to sig" # Add your custom message here
+    # - name: Slack Notification
+    #   uses: 8398a7/action-slack@v2
+    #   if: always()
+    #   with:
+    #     status: ${{ job.status }}
+    #     author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
+    #     text: "This is in relation to pushing the data from snowflake to sig" # Add your custom message here

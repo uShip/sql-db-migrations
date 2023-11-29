@@ -1,6 +1,9 @@
-from src.helpers.db_conn import connect_db, DestroyDBConnections, snowflake_connection
 import datetime
 import os
+import sys
+sys.path.append("src/helpers")
+from db_conn import connect_db, DestroyDBConnections, snowflake_connection
+# from src.helpers.db_conn import connect_db, DestroyDBConnections, snowflake_connection
 
 
 def log_message(message, *args):
