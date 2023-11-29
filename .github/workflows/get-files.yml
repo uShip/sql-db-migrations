@@ -1,6 +1,5 @@
 name: Test Workflow Deployment
 
-# on: [push]
 on:
   workflow_dispatch:
     inputs:
@@ -16,21 +15,6 @@ on:
         required: true
         default: 'devPricing'
 
-# inputs:
-#   ODBC_VERSION:
-#     description: 'ODBC version to install (18 or 17 validated)'
-#     default: "18"
-#   DISTRO:
-#     description: 'Distribution (from DOCS_URL)'
-#     default: Ubuntu
-#   DOCS_URL:
-#     description: 'URL to the docs page to scrape instructions from'
-#     default: "https://raw.githubusercontent.com/MicrosoftDocs/sql-docs/live/docs/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server.md"
-#   REMOVE_EXITS:
-#     default: 'true'
-#     description: 'Remove exit statements from the script (they break the workflow)'
-
-
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]
@@ -41,49 +25,55 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0 # Fetches all history for all branches and tags
-    - name: Set up Python 3.10.6
+    - name: Set up Python 3.9
       uses: actions/setup-python@v3
       with:
-        python-version: 3.10.6
-    - name: Install dependencies
+        python-version: 3.9
+
+    - name: Validate environment
+      run: |
+        echo "Selected environment: ${{ github.event.inputs.environment }}"
+        case "${{ github.event.inputs.environment }}" in prod|dev|qa|sandbox|devPricing)
+            echo "Deploying to ${{ github.event.inputs.environment }}"
+            ;;*)
+            echo "Error: Invalid environment selected. Allowed values are prod, dev, qa, or sandbox"
+            exit 1
+            ;;
+        esac
+
+    - name: Install Requirements and Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests
+        pip install -r requirements.txt
 
-    # - uses: Yarden-zamir/install-mssql-odbc@main
-    #   with:
-    #     ODBC_VERSION: 17
-    #     DISTRO: Ubuntu
-    #     DOCS_URL: https://yarden-zamir.com/alternate-docs-path.md
-    #     REMOVE_EXITS: true
     - name: Install pyodbc on the server
       run: |
         sudo dpkg --configure -a && true
-        python extract_pyodbc.py | bash
+        python src/extract_pyodbc.py | bash
+        pip install pyodbc
       env:
         DISTRO: "Ubuntu"
         REMOVE_EXITS: 'true'
         DOCS_URL: "https://raw.githubusercontent.com/MicrosoftDocs/sql-docs/live/docs/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server.md"
-        ODBC_VERSION: 17
+        ODBC_VERSION: 18
       shell: bash
-    - run: pip install -r requirements.txt
 
-    # - name: Find Modified SQL Files
-    #   id: modified_sql
+    # - name: Fix SQL files
     #   run: |
-    #     MODIFIED_SQL=$(git diff --name-only --diff-filter=AM HEAD~ HEAD | grep '.sql$' || true)
-    #     if [ -z "$MODIFIED_SQL" ]; then
-    #       echo "No modified SQL files found."
-    #     else
-    #       echo "Modified SQL Files:"
-    #       echo "$MODIFIED_SQL"
-    #       echo "MODIFIED_SQL=$(echo "$MODIFIED_SQL" | xargs)" >> $GITHUB_ENV
-    #     fi
-    #   shell: bash
+    #     sqlfluff fix --dialect tsql . --exclude-rules RF04,LF05
 
+    - name: Modify/Configure OpenSSL, ODBC connection String
+      run: |
+        sudo chmod +rwx /etc/ssl/openssl.cnf
+        sudo sed -i 's/TLSv1.2/TLSv1/g' /etc/ssl/openssl.cnf
+        sudo sed -i 's/SECLEVEL=2/SECLEVEL=0/g' /etc/ssl/openssl.cnf
+        echo '[system_default_sect]\nMinProtocol = TLSv1.0\nCipherString = DEFAULT@SECLEVEL=0' | sudo tee -a /etc/ssl/openssl.cnf
+        echo 'export CONNECTION_STRING="$CONNECTION_STRING TrustServerCertificate=yes"' >> $GITHUB_ENV
+      env:
+        CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
 
     - name: Run Python script
-      run: python deploy.py #${{ env.MODIFIED_SQL }}
+      run: python deploy.py
       env:
         DB_SERVER: ${{ secrets.DB_SERVER }}
         DB_NAME: ${{ secrets.DATABASE }}

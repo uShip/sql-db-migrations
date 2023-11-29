@@ -167,7 +167,7 @@ select	getdate() 'RunDate',
 	case	when l.totalweight > 400 then 2
 		when l.totalweight > 200 or (i1.length > '84' or i1.height > '84' or i1.width > '84') then 1
 		else 0 end 'BB',
-               u.username 'Carrier',
+    u.username 'Carrier',
 	b.dateaccepted 'DateAccepted',
 	b.bidvolumeusd 'MatchPrice',
 	b.bidvolumeusd-isnull(r.nmr_post,0) 'Amount_To_Carrier',
