@@ -1,4 +1,4 @@
-from .. import connect_db, DestroyDBConnections, snowflake_connection
+from src.db_conn import connect_db, DestroyDBConnections, snowflake_connection
 import datetime
 import os
 

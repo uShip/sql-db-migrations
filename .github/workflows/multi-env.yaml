@@ -111,4 +111,4 @@ jobs:
       with:
         status: ${{ job.status }}
         author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
-        text: "This is in relation to pushing the data from snowflake to sig" # Add your custom message here
+        text: "This is in relation to deploying new changes to ${{ github.event.inputs.environment }}" # Add your custom message here
