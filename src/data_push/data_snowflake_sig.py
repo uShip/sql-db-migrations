@@ -93,6 +93,7 @@ def main():
             # Fetch data from Snowflake
             cursor_snowflake.execute(snowflake_query)
             data = cursor_snowflake.fetchall()
+            print(data)
 
             # Get column names from Snowflake result
             columns = [desc[0] for desc in cursor_snowflake.description]

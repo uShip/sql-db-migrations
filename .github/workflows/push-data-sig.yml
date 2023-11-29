@@ -1,4 +1,4 @@
-name: db-workflow
+name: Snowflake-SIG
 
 on:
   workflow_dispatch:
