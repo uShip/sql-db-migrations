@@ -49,7 +49,7 @@ jobs:
     - name: Install pyodbc on the server
       run: |
         sudo dpkg --configure -a && true
-        python extract_pyodbc.py | bash
+        python src/extract_pyodbc.py | bash
         pip install pyodbc
       env:
         DISTRO: "Ubuntu"

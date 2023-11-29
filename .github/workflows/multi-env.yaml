@@ -15,6 +15,10 @@ on:
         required: true
         default: 'devPricing'
 
+env:
+  commit: ${{ github.sha }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]
@@ -49,7 +53,7 @@ jobs:
     - name: Install pyodbc on the server
       run: |
         sudo dpkg --configure -a && true
-        python extract_pyodbc.py | bash
+        python src/extract_pyodbc.py | bash
         pip install pyodbc
       env:
         DISTRO: "Ubuntu"
@@ -101,10 +105,10 @@ jobs:
         SQL_FILES: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}
 
     #Alert in Slack
-    - uses: 8398a7/action-slack@v2
+    - name: Slack Notification
+      uses: 8398a7/action-slack@v2
       if: always()
       with:
         status: ${{ job.status }}
         author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        text: "This is in relation to pushing the data from snowflake to sig" # Add your custom message here
