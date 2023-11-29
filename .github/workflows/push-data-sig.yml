@@ -77,7 +77,6 @@ jobs:
         USERNAME: ${{ secrets.DB_USER }}
         PASSWORD: ${{ secrets.DB_PASS }}
 
-
     # Alert in Slack
     - name: Slack Notification
       uses: 8398a7/action-slack@v2
