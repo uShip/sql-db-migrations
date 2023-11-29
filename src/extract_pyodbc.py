@@ -1,8 +1,8 @@
 from os import getenv
 from requests import get
 
-remove_exits = getenv('REMOVE_EXITS', "True")
-docs_url = getenv('DOCS_URL')
+remove_exits = getenv("REMOVE_EXITS", "True")
+docs_url = getenv("DOCS_URL")
 distro = getenv("DISTRO", "Ubuntu")
 ODBC_version = getenv("ODBC_VERSION", "18")
 
@@ -19,7 +19,9 @@ per_platform_instructions = {}
 
 for platform in platforms:
     name, code = platform.split("]")[0], platform.split("```bash")[1].split("```")[0]
-    per_platform_instructions[name] = code.replace("exit\n", "") if remove_exits else code
+    per_platform_instructions[name] = (
+        code.replace("exit\n", "") if remove_exits else code
+    )
 
 if distro in per_platform_instructions:
     print(per_platform_instructions[distro])
