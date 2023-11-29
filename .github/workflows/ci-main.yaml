@@ -91,7 +91,7 @@ jobs:
         with:
           status: ${{ job.status }}
           author_name: DB-MIGRATION-${{ matrix.env}}
-          text: "This is in relation to pushing the data from snowflake to sig" # Add your custom message here
+          text: "This is in relation to deploying new changes to SIG" # Add your custom message here
         # env:
           # GITHUB_TOKEN: ${{ secrets.SLACK_GITHUB_TOKEN }}
           # SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
