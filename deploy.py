@@ -3,6 +3,7 @@ import sys
 import pyodbc
 import glob
 from datetime import datetime, date
+
 # from db_conn import connect_db, DestroyDBConnections
 
 # Get the current date
@@ -39,6 +40,7 @@ def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection
         log_message("Failed to connect to the Database: {}".format(e))
         raise Exception("Database connection timed out or failed") from e
 
+
 def DestroyDBConnections(conn, crs):
     if "Connection" in str(type(conn)) and "Cursor" in str(type(crs)):
         crs.close()
@@ -48,38 +50,40 @@ def DestroyDBConnections(conn, crs):
 
 def find_sql_files(start_path):
     """Recursively find all .sql files in the given directory."""
-    return glob.glob(start_path + '/**/*.sql', recursive=True)
+    return glob.glob(start_path + "/**/*.sql", recursive=True)
+
 
 def log_message(message, *args):
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"{timestamp} - {message}")
+
 
 def execute_sql_script(file_path, cursor, conn):
     # Read the SQL file
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, "r") as file:
             sql_script = file.read()
 
         # Check the file path and execute the corresponding SQL command
-        if 'create_table' in file_path:
-            print('Starting Create Table')
+        if "create_table" in file_path:
+            print("Starting Create Table")
             cursor.execute(sql_script)
             conn.commit()
             print(f"Output of {file_path}:\n")
-        elif 'insert_data' in file_path:
-            print('Starting INSERT DATA FUNCTION')
+        elif "insert_data" in file_path:
+            print("Starting INSERT DATA FUNCTION")
             # cursor.execute(sql_script)
             # conn.commit()
             print(f"Data inserted from {file_path}")
-        elif 'stored_procedures' in file_path:
-            print('Starting Stored Procedure file')
+        elif "stored_procedures" in file_path:
+            print("Starting Stored Procedure file")
             cursor.execute(sql_script)
             conn.commit()
             print(f"Stored procedure executed from {file_path}")
     except pyodbc.Error as e:
-            # Log SQL error
-            log_message(f"SQL Error occurred: {e}")
-            # Continue with the next file instead of stopping the script
+        # Log SQL error
+        log_message(f"SQL Error occurred: {e}")
+        # Continue with the next file instead of stopping the script
     except Exception as e:
         # Log other types of errors
         log_message(f"Error occurred: {e}")
@@ -104,10 +108,9 @@ def main(db_server, db_name, username, password, sql_files):
     #             if file_modified_date == current_date:
     #                 execute_sql_script(file_path, crs, conn)
 
-
     for sql_file in sql_files:
-        if sql_file.endswith('.sql'):
-            print(f'starting {sql_file}')
+        if sql_file.endswith(".sql"):
+            print(f"starting {sql_file}")
             execute_sql_script(sql_file, crs, conn)
 
     # Close the cursor and connection
@@ -124,15 +127,15 @@ if __name__ == "__main__":
     # parser.add_argument('--repo_path', default='.', help='Path to the repository containing SQL files (default: current directory)')
 
     # args = parser.parse_args()
-    db_server = os.getenv('DB_SERVER')
-    db_name = os.getenv('DB_NAME')
-    username = os.getenv('USERNAME')
-    password = os.getenv('PASSWORD')
-    repo_path = os.getenv('REPO_PATH', '.')
+    db_server = os.getenv("DB_SERVER")
+    db_name = os.getenv("DB_NAME")
+    username = os.getenv("USERNAME")
+    password = os.getenv("PASSWORD")
+    repo_path = os.getenv("REPO_PATH", ".")
     # sql_files = sys.argv[1:]
 
     # Parse the list of SQL files passed as a space-separated string
-    sql_files_str = os.getenv('SQL_FILES', '')
+    sql_files_str = os.getenv("SQL_FILES", "")
     sql_files = sql_files_str.split() if sql_files_str else []
 
     main(db_server, db_name, username, password, sql_files)
