@@ -2,13 +2,8 @@ from datetime import datetime
 import os
 import sys
 sys.path.append("src/helpers")
-from db_conn import connect_db, DestroyDBConnections, snowflake_connection
+from db_conn import connect_db, DestroyDBConnections, snowflake_connection, log_message
 # from src.helpers.db_conn import connect_db, DestroyDBConnections, snowflake_connection
-
-
-def log_message(message, *args):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"{timestamp} - {message}")
 
 
 def insert_data_into_mssql(connection, cursor, table_name, columns, data):
@@ -69,6 +64,7 @@ def main():
         }
 
         # Establish connection to Snowflake and SQL Server
+        print('Connecting to Snowflake')
         conn_snowflake = snowflake_connection(
             snowflake_username,
             snowflake_keypass,
@@ -78,8 +74,11 @@ def main():
             snowflake_database,
             snowflake_role,
         )
-        conn_mssql, cursor_mssql = connect_db(db_server, db_name, username, password)
         cursor_snowflake = conn_snowflake.cursor()
+        print('Connected to Snowflake')
+
+        print('Connecting to Snowflake')
+        conn_mssql, cursor_mssql = connect_db(db_server, db_name, username, password)
 
         for i in range(0, len(snowflake_tables)):
             # Snowflake query
@@ -113,8 +112,8 @@ def main():
         # Log other types of errors
         log_message(f"Error occurred: {e}")
         # Continue with the next file
-    finally:
-        DestroyDBConnections(conn_mssql, cursor_mssql)
+    # finally:
+    #     DestroyDBConnections(conn_mssql, cursor_mssql)
 
 
 if __name__ == "__main__":

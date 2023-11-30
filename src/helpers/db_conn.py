@@ -4,6 +4,7 @@ import pyodbc
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 import coloredlogs
+from datetime import datetime
 import logging
 from snowflake.connector.pandas_tools import write_pandas
 from snowflake.connector import connect
@@ -11,6 +12,9 @@ from snowflake.connector import connect
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
 
+def log_message(message, *args):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"{timestamp} - {message}")
 
 def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection:
     """
