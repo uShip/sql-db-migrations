@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import os
 import sys
 sys.path.append("src/helpers")
@@ -50,7 +50,7 @@ def main():
     snowflake_role = os.environ["snowflake_role"]
 
     # Get the current date
-    current_date = datetime.datetime.now()
+    current_date = datetime.now()
 
     # Check if today is Wednesday (Wednesday corresponds to 2 in the weekday() function, where Monday is 0 and Sunday is 6)
     if current_date.weekday() == 2:
