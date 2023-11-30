@@ -111,9 +111,11 @@ def main():
     except Exception as e:
         # Log other types of errors
         log_message(f"Error occurred: {e}")
+        raise Exception from e
         # Continue with the next file
-    # finally:
-    #     DestroyDBConnections(conn_mssql, cursor_mssql)
+    finally:
+        if conn_mssql:
+            DestroyDBConnections(conn_mssql, cursor_mssql)
 
 
 if __name__ == "__main__":
