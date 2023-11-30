@@ -117,3 +117,6 @@ tfplan.json
 
 # Private Keys
 *.pem
+
+#pycache
+*.pyc
