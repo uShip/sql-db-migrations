@@ -1,0 +1,68 @@
+name: CI/CD Pipeline
+
+on:
+  workflow_dispatch:
+
+env:
+    commit: ${{ github.sha }}
+    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+jobs:
+    deploy_dev:
+        name: Deploy / DEV
+        runs-on: [self-hosted, uship-linux]
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+        - name: Common steps
+          uses: ./.github/actions/common-steps
+          with:
+            environment: 'dev'
+
+    deploy_sand:
+      name: Deploy / Staging
+      needs: deploy_dev
+      runs-on: [self-hosted, uship-linux]
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+        - name: Common steps`
+          uses: ./.github/actions/common-steps
+          with:
+            environment: 'sand'
+
+    deploy_qa:
+      name: Deploy / Review
+      needs: deploy_dev
+      runs-on: [self-hosted, uship-linux]
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+        - name: Common steps
+          uses: ./.github/actions/common-steps
+          with:
+            environment: 'qa'
+
+    deploy_production:
+        name: Deploy / Production
+        needs: [deploy_sand, deploy_qa]
+        runs-on: [self-hosted, uship-linux]
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v3
+          - name: Common steps
+            uses: ./.github/actions/common-steps
+            with:
+              environment: 'prod'
+
+    # deploy_production:
+    #     name: Deploy / Production
+    #     needs: deploy_qa
+    #     # Uncomment the following line if there is a review job
+    #     # needs: [deploy_staging, deploy_review]
+    #     runs-on: ubuntu-latest
+    #     steps:
+    #     - uses: actions/checkout@v2
+    #     - name: Deploy to Production
+    #       run: |
+    #         # Your production deployment commands go here
