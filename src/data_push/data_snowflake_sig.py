@@ -82,7 +82,7 @@ def main():
 
         for i in range(0, len(snowflake_tables)):
             # Snowflake query
-            if snowflake_tables[i].contains("fuelprices"):
+            if "fuelprices" in snowflake_tables[i]:
                 snowflake_query = f"SELECT \
                                         DATE, \
                                         MAX(CASE WHEN TYPE = 'Total Gasoline' THEN PPG ELSE NULL END) AS gas, \
@@ -111,7 +111,7 @@ def main():
     except Exception as e:
         # Log other types of errors
         log_message(f"Error occurred: {e}")
-        raise Exception from e
+        raise Exception("A new error occurred") from e
         # Continue with the next file
     finally:
         if conn_mssql:
