@@ -118,5 +118,7 @@ tfplan.json
 # Private Keys
 *.pem
 
-#pycache
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
 *.pyc
