@@ -79,33 +79,15 @@ def main():
         cursor_snowflake = conn_snowflake.cursor()
         print('Connected to Snowflake')
 
-        print('Connecting to SQL SERVER')
-        conn_mssql, cursor_mssql = connect_db(db_server, db_name, username, password)
+        # print('Connecting to SQL SERVER')
+        # conn_mssql, cursor_mssql = connect_db(db_server, db_name, username, password)
 
         # Create a connection to MSSQL using SQLAlchemy engine
         # connection_str = f'mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no'
-        print('tring engine connection with import sqlserver statement')
+        print('tring SQL engine connection with import sqlserver statement')
         engine = connect_db_sqlaclchemy(db_server, db_name, username, password)
         print('succesful')
         # engine = create_engine(connection_str, echo=True, connect_args={'timeout': 90})
-
-        # Test the connection
-        try:
-            print('tring engine connection directly sqlserver')
-            engine = create_engine(
-                "mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?"
-                "driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
-                "&authentication=ActiveDirectoryIntegrated"
-            )
-            with engine.connect() as conn:
-                result = conn.execute("SELECT 1")  # Simple query to test the connection
-                print(result.fetchone())
-            print("Connection successful.")
-        except Exception as e:
-            print(f"Error: {e}")
-
-        # MSSQL table to truncate and insert data
-        mssql_table = 'your_mssql_table'
 
         for i in range(0, len(snowflake_tables)):
             # Snowflake query
@@ -139,7 +121,7 @@ def main():
             if "partners" in snowflake_tables[i]:
                 # Truncate the table in MSSQL
                 with engine.connect() as conn:
-                    conn.execute(f"TRUNCATE TABLE {mssql_table}")
+                    conn.execute(f"TRUNCATE TABLE {mssql_table_name}")
 
             # Write data to MSSQL
             df.to_sql(mssql_table_name, con=engine, if_exists='append', index=False)
@@ -154,10 +136,6 @@ def main():
         # Log other types of errors
         log_message(f"Error occurred: {e}")
         raise Exception("A new error occurred") from e
-        # Continue with the next file
-    # finally:
-    #     if conn_mssql:
-    #         DestroyDBConnections(conn_mssql, cursor_mssql)
 
 
 if __name__ == "__main__":
