@@ -14,9 +14,11 @@ from sqlalchemy import create_engine, event
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
 
+
 def log_message(message, *args):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"{timestamp} - {message}")
+
 
 def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection:
     """
@@ -56,7 +58,9 @@ def DestroyDBConnections(conn, crs):
         log_message("Closing the connection.")
 
 
-def connect_db_sqlaclchemy(host_server, dbName, userName, userPassword) -> pyodbc.Connection:
+def connect_db_sqlaclchemy(
+    host_server, dbName, userName, userPassword
+) -> pyodbc.Connection:
     """
     Connect to database
 
@@ -78,13 +82,16 @@ def connect_db_sqlaclchemy(host_server, dbName, userName, userPassword) -> pyodb
 
     log_message("Trying to connect to Database")
     try:
-        connection_url = URL.create("mssql+pyodbc", query={"odbc_connect": connection_str})
+        connection_url = URL.create(
+            "mssql+pyodbc", query={"odbc_connect": connection_str}
+        )
         engine = create_engine(connection_url)
         log_message("Connected to Database")
         return engine
     except (pyodbc.Error, pyodbc.OperationalError) as e:
         log_message("Failed to connect to the Database: {}".format(e))
         raise Exception("Database connection timed out or failed") from e
+
 
 def snowflake_connection(
     snowflake_username,

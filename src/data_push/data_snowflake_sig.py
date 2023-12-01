@@ -3,8 +3,16 @@ import os
 import sys
 import pandas as pd
 from sqlalchemy import create_engine
+
 sys.path.append("src/helpers")
-from db_conn import connect_db, DestroyDBConnections, snowflake_connection, log_message, connect_db_sqlaclchemy
+from db_conn import (
+    connect_db,
+    DestroyDBConnections,
+    snowflake_connection,
+    log_message,
+    connect_db_sqlaclchemy,
+)
+
 # from src.helpers.db_conn import connect_db, DestroyDBConnections, snowflake_connection
 
 
@@ -66,7 +74,7 @@ def main():
         }
 
         # Establish connection to Snowflake and SQL Server
-        print('Connecting to Snowflake')
+        print("Connecting to Snowflake")
         conn_snowflake = snowflake_connection(
             snowflake_username,
             snowflake_keypass,
@@ -77,13 +85,13 @@ def main():
             snowflake_role,
         )
         cursor_snowflake = conn_snowflake.cursor()
-        log_message('Connected to Snowflake')
+        log_message("Connected to Snowflake")
 
         # Create a connection to MSSQL using SQLAlchemy engine
         # connection_str = f'mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no'
-        print('trying SQL engine connection with import sqlserver statement')
+        print("trying SQL engine connection with import sqlserver statement")
         engine = connect_db_sqlaclchemy(db_server, db_name, username, password)
-        log_message('succesful connection established to SQL server')
+        log_message("succesful connection established to SQL server")
         # engine = create_engine(connection_str, echo=True, connect_args={'timeout': 90})
 
         for i in range(0, len(snowflake_tables)):
@@ -120,7 +128,7 @@ def main():
 
             # Write data to MSSQL
             log_message("Writing Data to SQL Server")
-            df.to_sql(mssql_table_name, con=engine, if_exists='append', index=False)
+            df.to_sql(mssql_table_name, con=engine, if_exists="append", index=False)
 
             # Close the MSSQL connection
             log_message("Reading, Writing done. Closing all connections")
