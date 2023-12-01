@@ -77,16 +77,13 @@ def main():
             snowflake_role,
         )
         cursor_snowflake = conn_snowflake.cursor()
-        print('Connected to Snowflake')
-
-        # print('Connecting to SQL SERVER')
-        # conn_mssql, cursor_mssql = connect_db(db_server, db_name, username, password)
+        log_message('Connected to Snowflake')
 
         # Create a connection to MSSQL using SQLAlchemy engine
         # connection_str = f'mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no'
-        print('tring SQL engine connection with import sqlserver statement')
+        print('trying SQL engine connection with import sqlserver statement')
         engine = connect_db_sqlaclchemy(db_server, db_name, username, password)
-        print('succesful')
+        log_message('succesful connection established to SQL server')
         # engine = create_engine(connection_str, echo=True, connect_args={'timeout': 90})
 
         for i in range(0, len(snowflake_tables)):
@@ -103,6 +100,7 @@ def main():
                 snowflake_query = f"SELECT * FROM {snowflake_tables[i]}"
 
             # Query to read data from Snowflake
+            log_message("Getting Data from Snowflake")
             df = pd.read_sql(snowflake_query, conn_snowflake)
             # Close the Snowflake connection
             conn_snowflake.close()
@@ -111,9 +109,6 @@ def main():
             # cursor_snowflake.execute(snowflake_query)
             # data = cursor_snowflake.fetchall()
             # print(data)
-
-            # Get column names from Snowflake result
-            # columns = [desc[0] for desc in cursor_snowflake.description]
 
             # Define target MSSQL table name
             mssql_table_name = table_mapping[snowflake_tables[i]]
@@ -124,13 +119,12 @@ def main():
                     conn.execute(f"TRUNCATE TABLE {mssql_table_name}")
 
             # Write data to MSSQL
+            log_message("Writing Data to SQL Server")
             df.to_sql(mssql_table_name, con=engine, if_exists='append', index=False)
 
             # Close the MSSQL connection
+            log_message("Reading, Writing done. Closing all connections")
             engine.dispose()
-
-            # Insert data into MSSQL
-            # insert_data_into_mssql(conn_mssql, cursor_mssql, mssql_table_name, columns, data)
 
     except Exception as e:
         # Log other types of errors
