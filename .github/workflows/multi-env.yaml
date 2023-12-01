@@ -117,9 +117,9 @@ jobs:
       if: always()
       run: |
         if [ ${{ job.status }} == "success" ]; then
-          echo "SLACK_MESSAGE=Deployment Successful for ${{ github.event.inputs.environment }}." >> $GITHUB_ENV
+          echo "SLACK_MESSAGE=Deployment Successful." >> $GITHUB_ENV
         else
-          echo "SLACK_MESSAGE=Deployment Failed for ${{ github.event.inputs.environment }}. Please check logs." >> $GITHUB_ENV
+          echo "SLACK_MESSAGE=Deployment Failed. Please check logs." >> $GITHUB_ENV
 
     #Alert in Slack
     - name: Slack Notification
