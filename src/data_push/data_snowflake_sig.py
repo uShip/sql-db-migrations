@@ -83,7 +83,17 @@ def main():
         conn_mssql, cursor_mssql = connect_db(db_server, db_name, username, password)
 
         # Create a connection to MSSQL using SQLAlchemy engine
-        engine = create_engine(f'mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server')
+        connection_str = f'mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no'
+        engine = create_engine(connection_str, echo=True, connect_args={'timeout': 90})
+
+        # Test the connection
+        try:
+            with engine.connect() as conn:
+                result = conn.execute("SELECT 1")  # Simple query to test the connection
+                print(result.fetchone())
+            print("Connection successful.")
+        except Exception as e:
+            print(f"Error: {e}")
 
         # MSSQL table to truncate and insert data
         mssql_table = 'your_mssql_table'
