@@ -19,7 +19,7 @@ IF
             ACTIVE NUMBER(1,0),
             AM VARCHAR(MAX),
             AM_NAME VARCHAR(1000),
-            AE VARCHAR(MAX),
+            AE VARCHAR(),
             AE_NAME VARCHAR(121),
             STRATEGICPARTNER NUMBER(1,0),
             STARTDATE TIMESTAMP_NTZ(9),
