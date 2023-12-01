@@ -1,6 +1,8 @@
 from datetime import datetime
 import os
 import sys
+import pandas as pd
+from sqlalchemy import create_engine
 sys.path.append("src/helpers")
 from db_conn import connect_db, DestroyDBConnections, snowflake_connection, log_message
 # from src.helpers.db_conn import connect_db, DestroyDBConnections, snowflake_connection
@@ -77,8 +79,18 @@ def main():
         cursor_snowflake = conn_snowflake.cursor()
         print('Connected to Snowflake')
 
-        print('Connecting to Snowflake')
+        print('Connecting to SQL SERVER')
         conn_mssql, cursor_mssql = connect_db(db_server, db_name, username, password)
+
+        # Create a connection to MSSQL using SQLAlchemy engine
+        engine = create_engine(f'mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server')
+
+        # MSSQL table to truncate and insert data
+        mssql_table = 'your_mssql_table'
+
+        # Truncate the table in MSSQL
+        with engine.connect() as conn:
+            conn.execute(f"TRUNCATE TABLE {mssql_table}")
 
         for i in range(0, len(snowflake_tables)):
             # Snowflake query
@@ -92,30 +104,45 @@ def main():
                                     GROUP BY DATE;"
             else:
                 snowflake_query = f"SELECT * FROM {snowflake_tables[i]}"
+
+            # Query to read data from Snowflake
+            df = pd.read_sql(snowflake_query, conn_snowflake)
+            # Close the Snowflake connection
+            conn_snowflake.close()
+
             # Fetch data from Snowflake
-            cursor_snowflake.execute(snowflake_query)
-            data = cursor_snowflake.fetchall()
-            print(data)
+            # cursor_snowflake.execute(snowflake_query)
+            # data = cursor_snowflake.fetchall()
+            # print(data)
 
             # Get column names from Snowflake result
-            columns = [desc[0] for desc in cursor_snowflake.description]
+            # columns = [desc[0] for desc in cursor_snowflake.description]
 
             # Define target MSSQL table name
             mssql_table_name = table_mapping[snowflake_tables[i]]
 
+            if "partners" in snowflake_tables[i]:
+                # Truncate the table in MSSQL
+                with engine.connect() as conn:
+                    conn.execute(f"TRUNCATE TABLE {mssql_table}")
+
+            # Write data to MSSQL
+            df.to_sql(mssql_table_name, con=engine, if_exists='append', index=False)
+
+            # Close the MSSQL connection
+            engine.dispose()
+
             # Insert data into MSSQL
-            insert_data_into_mssql(
-                conn_mssql, cursor_mssql, mssql_table_name, columns, data
-            )
+            # insert_data_into_mssql(conn_mssql, cursor_mssql, mssql_table_name, columns, data)
 
     except Exception as e:
         # Log other types of errors
         log_message(f"Error occurred: {e}")
         raise Exception("A new error occurred") from e
         # Continue with the next file
-    finally:
-        if conn_mssql:
-            DestroyDBConnections(conn_mssql, cursor_mssql)
+    # finally:
+    #     if conn_mssql:
+    #         DestroyDBConnections(conn_mssql, cursor_mssql)
 
 
 if __name__ == "__main__":
