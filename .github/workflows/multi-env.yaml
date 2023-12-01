@@ -112,6 +112,11 @@ jobs:
         PASSWORD: ${{ secrets.DB_PASS }}
         SQL_FILES: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}
 
+    # Custom step to set a flag if the deploy script failed
+    - name: Set failure flag
+      if: failure()
+      run: echo "DEPLOY_FAILED=true" >> $GITHUB_ENV
+
     #Alert in Slack
     - name: Slack Notification
       uses: 8398a7/action-slack@v2
@@ -119,4 +124,6 @@ jobs:
       with:
         status: ${{ job.status }}
         author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
-        text: "This is in relation to deploying new changes to ${{ github.event.inputs.environment }}" # Add your custom message here
+        text: |
+          "Deployment Status for ${{ github.event.inputs.environment }}: ${{ job.status }}"
+          ${{ if eq(env.DEPLOY_FAILED, 'true') }} Deployment Failed. Please check logs. ${{ else }} Deployment Successful. ${{ endif }}

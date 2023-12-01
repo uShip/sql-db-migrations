@@ -91,31 +91,35 @@ def execute_sql_script(file_path, cursor, conn):
 
 
 def main(db_server, db_name, username, password, sql_files):
-    # Create connection string
-    conn, crs = connect_db(db_server, db_name, username, password)
-    # Get list of .sql files in specified directory, sorted alphabetically
+    try:
+        # Create connection string
+        conn, crs = connect_db(db_server, db_name, username, password)
+        # Get list of .sql files in specified directory, sorted alphabetically
 
-    # base_folder_path = 'sql/Pricing'
+        # base_folder_path = 'sql/Pricing'
 
-    # for root, dirs, files in os.walk(base_folder_path):
-    #     for file in files:
-    #         if file.endswith('.sql'):
-    #             file_path = os.path.join(root, file)
-    #             print(f'{file_path} : {date.fromtimestamp(os.path.getmtime(file_path))}')
-    #             # Get the modification time of the file
-    #             file_modified_date = date.fromtimestamp(os.path.getmtime(file_path))
-    #             # Check if the file was modified or created today
-    #             if file_modified_date == current_date:
-    #                 execute_sql_script(file_path, crs, conn)
+        # for root, dirs, files in os.walk(base_folder_path):
+        #     for file in files:
+        #         if file.endswith('.sql'):
+        #             file_path = os.path.join(root, file)
+        #             print(f'{file_path} : {date.fromtimestamp(os.path.getmtime(file_path))}')
+        #             # Get the modification time of the file
+        #             file_modified_date = date.fromtimestamp(os.path.getmtime(file_path))
+        #             # Check if the file was modified or created today
+        #             if file_modified_date == current_date:
+        #                 execute_sql_script(file_path, crs, conn)
 
-    for sql_file in sql_files:
-        if sql_file.endswith(".sql"):
-            print(f"starting {sql_file}")
-            execute_sql_script(sql_file, crs, conn)
+        for sql_file in sql_files:
+            if sql_file.endswith(".sql"):
+                print(f"starting {sql_file}")
+                execute_sql_script(sql_file, crs, conn)
 
-    # Close the cursor and connection
-    crs.close()
-    conn.close()
+        # Close the cursor and connection
+        crs.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error occurred: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
