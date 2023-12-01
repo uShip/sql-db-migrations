@@ -114,8 +114,12 @@ jobs:
 
     # Custom step to set a flag if the deploy script failed
     - name: Set failure flag
-      if: failure()
-      run: echo "DEPLOY_FAILED=true" >> $GITHUB_ENV
+      if: always()
+      run: |
+        if [ ${{ job.status }} == "success" ]; then
+          echo "SLACK_MESSAGE=Deployment Successful for ${{ github.event.inputs.environment }}." >> $GITHUB_ENV
+        else
+          echo "SLACK_MESSAGE=Deployment Failed for ${{ github.event.inputs.environment }}. Please check logs." >> $GITHUB_ENV
 
     #Alert in Slack
     - name: Slack Notification
@@ -124,6 +128,4 @@ jobs:
       with:
         status: ${{ job.status }}
         author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
-        text: |
-          "Deployment Status for ${{ github.event.inputs.environment }}: ${{ job.status }}"
-          ${{ if eq(env.DEPLOY_FAILED, 'true') }} Deployment Failed. Please check logs. ${{ else }} Deployment Successful. ${{ endif }}
+        text: ${{ env.SLACK_MESSAGE }}
