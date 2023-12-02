@@ -109,7 +109,9 @@ def main():
 
             # Query to read data from Snowflake
             log_message("Getting Data from Snowflake")
-            df = pd.read_sql(snowflake_query, conn_snowflake)
+            conn_snowflake.execute(snowflake_query)
+            df = cursor_snowflake.fetch_pandas_all()
+            # df = pd.read_sql(snowflake_query, conn_snowflake)
             # Close the Snowflake connection
             conn_snowflake.close()
 

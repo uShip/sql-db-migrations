@@ -104,7 +104,7 @@ jobs:
       uses: tj-actions/changed-files@v40
       with:
         files: |
-          **/*.{sql,py}
+          **/*.{sql}
         write_output_files: true
 
     - name: Check if SQL files changed
@@ -134,7 +134,7 @@ jobs:
 
     #Alert in Slack
     - name: Slack Notification
-      if: ${{ github.event.inputs.team }} != 'DE' # always()
+      if: ${{ github.event.inputs.team }} != 'DE'
       uses: 8398a7/action-slack@v2
       with:
         status: ${{ job.status }}
