@@ -14,6 +14,16 @@ on:
           - sandbox
         required: true
         default: 'devPricing'
+      team:
+          type: choice
+          description: 'Team using this github action'
+          options:
+            - DE
+            - SRA
+            - SRE
+            - DBA
+          required: true
+          default: 'DE'
       depth:
         type: choice
         description: 'Depth to deploy to (prod, dev, qa, sandbox)'
@@ -84,6 +94,10 @@ jobs:
       env:
         CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
 
+    - name: Pull Latest Log File
+      run: |
+        git fetch origin main
+        git checkout origin/main src/deployment/execution_log.txt || echo "Log file does not exist yet."
 
     - name: Get modified SQL files
       id: changed-files-specific
@@ -112,23 +126,17 @@ jobs:
         PASSWORD: ${{ secrets.DB_PASS }}
         SQL_FILES: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}
 
-    # Custom step to set a flag if the deploy script failed
-    # - name: Set failure flag
-    #   id: set-failure-flag
-    #   if: always()
-    #   run: |
-    #     if [ ${{ job.status }} == "success" ]; then
-    #       echo "SLACK_MSG=Deployment Successful for environment: ${{ github.event.inputs.environment }}" >> $GITHUB_ENV
-    #     else
-    #       echo "SLACK_MSG=Deployment Failed for environment: ${{ github.event.inputs.environment }}. Please check logs." >> $GITHUB_ENV
+    - name: Commit and Push Log File
+      run: |
+          git add src/deployment/execution_log.txt
+          git diff --staged --quiet || git commit -m "Updated execution log"
+          git push
 
     #Alert in Slack
     - name: Slack Notification
+      if: ${{ github.event.inputs.team }} != 'DE' # always()
       uses: 8398a7/action-slack@v2
-      if: always()
       with:
         status: ${{ job.status }}
         author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
-        text: "Deployment Status for environment: ${{ github.event.inputs.environment }}"
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        text: "A github action has been initiated by ${{ github.event.inputs.team }}. Deployment Status: ${{ github.event.inputs.environment }}"
