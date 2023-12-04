@@ -1,15 +1,13 @@
-# action.yml
 name: Deployment Steps
-
 on:
   workflow_call:
     inputs:
       environment:
-        description: 'The target environment'
         required: true
+        type: string
 
 jobs:
-  run-job:
+  deploy:
     runs-on: [self-hosted, uship-linux]
     steps:
       - name: Checkout
