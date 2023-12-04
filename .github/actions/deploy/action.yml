@@ -80,6 +80,7 @@ runs:
         else
         echo "No SQL files have changed. Skipping deployment."
         fi
+      shell: bash
       env:
         DB_SERVER: ${{ inputs.DB_SERVER }}
         DB_NAME: ${{ inputs.DATABASE }}
