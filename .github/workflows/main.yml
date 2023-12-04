@@ -15,15 +15,11 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
         - name: Common steps
-          uses: ./.github/actions/deploy
+          uses: ./.github/actions/deploy/action.yml
           with:
             environment: 'dev'
-            DB_SERVER: ${{ secrets.DB_SERVER }}
-            DB_NAME: ${{ secrets.DATABASE }}
-            USERNAME: ${{ secrets.DB_USER }}
-            PASSWORD: ${{ secrets.DB_PASS }}
-            commit: ${{ env.commit }}
-            SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
+            # commit: ${{ env.commit }}
+            # SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
 
     deploy_sand:
       name: Deploy / Staging
