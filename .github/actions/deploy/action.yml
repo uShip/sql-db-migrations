@@ -12,6 +12,19 @@ inputs:
     description: 'Slack Webhook URL'
     required: true
 
+  DB_SERVER:
+    description: 'Database Server'
+    required: true
+  DB_NAME:
+    description: 'Database Name'
+    required: true
+  USERNAME:
+    description: 'Database Username'
+    required: true
+  PASSWORD:
+    description: 'Database Password'
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -94,6 +107,6 @@ runs:
       if: always()
       env:
         SLACK_COLOR: ${{ job.status }}
-        SLACK_WEBHOOK: ${{ inputs.SLACK_WEBHOOK }}
+        SLACK_WEBHOOK: ${{ inputs.SLACK_WEBHOOK_URL }}
         SLACK_TITLE: DB-MIGRATION-${{ inputs.environment }}
         SLACK_MESSAGE: "A github action has been initiated. Deployment Status for the environment ${{ inputs.environment }}: ${{ job.status }}"
