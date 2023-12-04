@@ -86,12 +86,10 @@ jobs:
 
       #Alert in Slack
       - name: Slack Notification
-        uses: 8398a7/action-slack@v2
+        uses: rtCamp/action-slack-notify@v2
         if: always()
-        with:
-          status: ${{ job.status }}
-          author_name: DB-MIGRATION-${{ matrix.env}}
-          text: "This is in relation to deploying new changes to SIG" # Add your custom message here
-        # env:
-          # GITHUB_TOKEN: ${{ secrets.SLACK_GITHUB_TOKEN }}
-          # SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        env:
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: DB-MIGRATION-${{ matrix.env}}
+          SLACK_MESSAGE: "A github action has been initiated. Deployment Status for the environment ${{ matrix.env}}: ${{ job.status }}"

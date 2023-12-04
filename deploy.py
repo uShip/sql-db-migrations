@@ -49,7 +49,7 @@ def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection
         server=host_server, database=dbName, username=userName, password=userPassword
     )
 
-    log_message("Trying to connect to Database")
+    logging.info("Trying to connect to Database")
     try:
         conn = pyodbc.connect(connection_str, timeout=90)
         crs = conn.cursor()
