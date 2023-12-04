@@ -1,9 +1,13 @@
-name: ci-main
+# action.yml
+name: 'Common Steps'
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      environment:
+        description: 'The target environment'
+        required: true
+        type: string
 
 env:
   commit: ${{ github.sha }}
@@ -12,15 +16,13 @@ env:
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]
-    strategy:
-      matrix:
-        env: [dev, qa, sanbox, prod]
-    environment: ${{ matrix.env}}
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Fetches all history for all branches and tags
+
       - name: Set up Python 3.10.6
         uses: actions/setup-python@v3
         with:
@@ -43,6 +45,7 @@ jobs:
           ODBC_VERSION: 18
         shell: bash
 
+      # Modify/Configure OpenSSL, ODBC connection String
       - name: Modify/Configure OpenSSL, ODBC connection String
         run: |
           sudo chmod +rwx /etc/ssl/openssl.cnf
@@ -53,29 +56,29 @@ jobs:
         env:
           CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
 
-      # - name: Fix SQL files
-      #   run: |
-      #     sqlfluff fix --dialect tsql . --exclude-rules RF04,LF05
+        # - name: Fix SQL files
+        #   run: |
+        #     sqlfluff fix --dialect tsql . --exclude-rules RF04,LF05
 
       - name: Get modified SQL files
         id: changed-files-specific
         uses: tj-actions/changed-files@v40
         with:
-          files: |
-            **/*.{sql,py}
-          write_output_files: true
+            files: |
+              **/*.{sql,py}
+              write_output_files: true
 
       - name: Check if SQL files changed
         id: check-sql-changed
         run: |
           if [[ "${{ steps.changed-files-specific.outputs.any_changed }}" == 'true' ]]; then
-            echo "One or more SQL files have changed."
-            echo "List all the SQL files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
-            echo "Deploying functions..."
-            # Run Python script
-            python deploy.py
+          echo "One or more SQL files have changed."
+          echo "List all the SQL files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
+          echo "Deploying functions..."
+          # Run Python script
+          python deploy.py
           else
-            echo "No SQL files have changed. Skipping deployment."
+          echo "No SQL files have changed. Skipping deployment."
           fi
         env:
           DB_SERVER: ${{ secrets.DB_SERVER }}
@@ -84,12 +87,12 @@ jobs:
           PASSWORD: ${{ secrets.DB_PASS }}
           SQL_FILES: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}
 
-      #Alert in Slack
+        #Alert in Slack
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         if: always()
         env:
           SLACK_COLOR: ${{ job.status }}
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_TITLE: DB-MIGRATION-${{ matrix.env}}
-          SLACK_MESSAGE: "A github action has been initiated. Deployment Status for the environment ${{ matrix.env}}: ${{ job.status }}"
+          SLACK_TITLE: DB-MIGRATION-${{ inputs.environment }}
+          SLACK_MESSAGE: "A github action has been initiated. Deployment Status for the environment ${{ inputs.environment }}: ${{ job.status }}"

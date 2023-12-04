@@ -14,6 +14,24 @@ on:
           - sandbox
         required: true
         default: 'devPricing'
+      team:
+          type: choice
+          description: 'Team using this github action'
+          options:
+            - DE
+            - SRA
+            - SRE
+            - DBA
+          required: true
+          default: 'DE'
+      depth:
+        type: choice
+        description: 'Depth to deploy to (prod, dev, qa, sandbox)'
+        options:
+          - 0
+          - 2
+        required: true
+        default: '0'
 
 env:
   commit: ${{ github.sha }}
@@ -28,7 +46,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        fetch-depth: 0 # Fetches all history for all branches and tags
+        fetch-depth: ${{ github.event.inputs.depth }}  #0  # OR "2" -> To retrieve the preceding commit.
     - name: Set up Python 3.9
       uses: actions/setup-python@v3
       with:
@@ -76,13 +94,17 @@ jobs:
       env:
         CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
 
+    - name: Pull Latest Log File
+      run: |
+        git fetch origin main
+        git checkout origin/main src/deployment/execution_log.txt || echo "Log file does not exist yet."
 
     - name: Get modified SQL files
       id: changed-files-specific
       uses: tj-actions/changed-files@v40
       with:
         files: |
-          **/*.{sql,py}
+          **.sql
         write_output_files: true
 
     - name: Check if SQL files changed
@@ -104,11 +126,18 @@ jobs:
         PASSWORD: ${{ secrets.DB_PASS }}
         SQL_FILES: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}
 
+    - name: Commit and Push Log File
+      run: |
+          git add src/deployment/execution_log.txt
+          git diff --staged --quiet || git commit -m "Updated execution log"
+          git push
+
     #Alert in Slack
     - name: Slack Notification
-      uses: 8398a7/action-slack@v2
-      if: always()
-      with:
-        status: ${{ job.status }}
-        author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
-        text: "This is in relation to pushing the data from snowflake to sig" # Add your custom message here
+      if: github.event.inputs.team != 'DE'
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_COLOR: ${{ job.status }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_TITLE: DB-MIGRATION-${{ github.event.inputs.environment }}
+        SLACK_MESSAGE: "A github action has been initiated by ${{ github.event.inputs.team }}. Deployment Status: ${{ github.event.inputs.environment }}"

@@ -4,12 +4,20 @@ import pyodbc
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 import coloredlogs
+from datetime import datetime
 import logging
 from snowflake.connector.pandas_tools import write_pandas
 from snowflake.connector import connect
+from sqlalchemy.engine import URL
+from sqlalchemy import create_engine, event
 
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
+
+
+def log_message(message, *args):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"{timestamp} - {message}")
 
 
 def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection:
@@ -27,7 +35,7 @@ def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection
     """
 
     log_message("Establishing mssql database connection")
-    CONNECTION_STRING: str = "DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=no"
+    CONNECTION_STRING: str = "DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=no"
     connection_str = CONNECTION_STRING.format(
         server=host_server, database=dbName, username=userName, password=userPassword
     )
@@ -48,6 +56,41 @@ def DestroyDBConnections(conn, crs):
         crs.close()
         conn.close()
         log_message("Closing the connection.")
+
+
+def connect_db_sqlaclchemy(
+    host_server, dbName, userName, userPassword
+) -> pyodbc.Connection:
+    """
+    Connect to database
+
+    Parameters:
+        host_server (str) = the host server name or IP address.
+        dbName (str) = the database name.
+        userName (str) = the username of login .
+        userPassword (str) = the user password for login.
+
+    Returns:
+        conn, crs = the key-value pair of the database conncection.
+    """
+
+    log_message("Establishing mssql database connection")
+    CONNECTION_STRING: str = "DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=no"
+    connection_str = CONNECTION_STRING.format(
+        server=host_server, database=dbName, username=userName, password=userPassword
+    )
+
+    log_message("Trying to connect to Database")
+    try:
+        connection_url = URL.create(
+            "mssql+pyodbc", query={"odbc_connect": connection_str}
+        )
+        engine = create_engine(connection_url)
+        log_message("Connected to Database")
+        return engine
+    except (pyodbc.Error, pyodbc.OperationalError) as e:
+        log_message("Failed to connect to the Database: {}".format(e))
+        raise Exception("Database connection timed out or failed") from e
 
 
 def snowflake_connection(

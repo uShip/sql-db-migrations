@@ -1,1 +1,1 @@
-DROP TABLE dbo.callother2
+DROP TABLE IF EXISTS dbo.callother4

@@ -1,11 +1,19 @@
-from .. import connect_db, DestroyDBConnections, snowflake_connection
-import datetime
+from datetime import datetime
 import os
+import sys
+import pandas as pd
+from sqlalchemy import create_engine
 
+sys.path.append("src/helpers")
+from db_conn import (
+    connect_db,
+    DestroyDBConnections,
+    snowflake_connection,
+    log_message,
+    connect_db_sqlaclchemy,
+)
 
-def log_message(message, *args):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"{timestamp} - {message}")
+# from src.helpers.db_conn import connect_db, DestroyDBConnections, snowflake_connection
 
 
 def insert_data_into_mssql(connection, cursor, table_name, columns, data):
@@ -47,7 +55,7 @@ def main():
     snowflake_role = os.environ["snowflake_role"]
 
     # Get the current date
-    current_date = datetime.datetime.now()
+    current_date = datetime.now()
 
     # Check if today is Wednesday (Wednesday corresponds to 2 in the weekday() function, where Monday is 0 and Sunday is 6)
     if current_date.weekday() == 2:
@@ -66,6 +74,7 @@ def main():
         }
 
         # Establish connection to Snowflake and SQL Server
+        print("Connecting to Snowflake")
         conn_snowflake = snowflake_connection(
             snowflake_username,
             snowflake_keypass,
@@ -75,12 +84,19 @@ def main():
             snowflake_database,
             snowflake_role,
         )
-        conn_mssql, cursor_mssql = connect_db(db_server, db_name, username, password)
         cursor_snowflake = conn_snowflake.cursor()
+        log_message("Connected to Snowflake")
+
+        # Create a connection to MSSQL using SQLAlchemy engine
+        # connection_str = f'mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no'
+        print("trying SQL engine connection with import sqlserver statement")
+        engine = connect_db_sqlaclchemy(db_server, db_name, username, password)
+        log_message("succesful connection established to SQL server")
+        # engine = create_engine(connection_str, echo=True, connect_args={'timeout': 90})
 
         for i in range(0, len(snowflake_tables)):
             # Snowflake query
-            if snowflake_tables[i].contains("fuelprices"):
+            if "fuelprices" in snowflake_tables[i]:
                 snowflake_query = f"SELECT \
                                         DATE, \
                                         MAX(CASE WHEN TYPE = 'Total Gasoline' THEN PPG ELSE NULL END) AS gas, \
@@ -90,28 +106,40 @@ def main():
                                     GROUP BY DATE;"
             else:
                 snowflake_query = f"SELECT * FROM {snowflake_tables[i]}"
-            # Fetch data from Snowflake
-            cursor_snowflake.execute(snowflake_query)
-            data = cursor_snowflake.fetchall()
-            print(data)
 
-            # Get column names from Snowflake result
-            columns = [desc[0] for desc in cursor_snowflake.description]
+            # Query to read data from Snowflake
+            log_message("Getting Data from Snowflake")
+            conn_snowflake.execute(snowflake_query)
+            df = cursor_snowflake.fetch_pandas_all()
+            # df = pd.read_sql(snowflake_query, conn_snowflake)
+            # Close the Snowflake connection
+            conn_snowflake.close()
+
+            # Fetch data from Snowflake
+            # cursor_snowflake.execute(snowflake_query)
+            # data = cursor_snowflake.fetchall()
+            # print(data)
 
             # Define target MSSQL table name
             mssql_table_name = table_mapping[snowflake_tables[i]]
 
-            # Insert data into MSSQL
-            insert_data_into_mssql(
-                conn_mssql, cursor_mssql, mssql_table_name, columns, data
-            )
+            if "partners" in snowflake_tables[i]:
+                # Truncate the table in MSSQL
+                with engine.connect() as conn:
+                    conn.execute(f"TRUNCATE TABLE {mssql_table_name}")
+
+            # Write data to MSSQL
+            log_message("Writing Data to SQL Server")
+            df.to_sql(mssql_table_name, con=engine, if_exists="append", index=False)
+
+            # Close the MSSQL connection
+            log_message("Reading, Writing done. Closing all connections")
+            engine.dispose()
 
     except Exception as e:
         # Log other types of errors
         log_message(f"Error occurred: {e}")
-        # Continue with the next file
-    finally:
-        DestroyDBConnections(conn_mssql, cursor_mssql)
+        raise Exception("A new error occurred") from e
 
 
 if __name__ == "__main__":
