@@ -22,7 +22,8 @@ jobs:
             DB_NAME: ${{ secrets.DATABASE }}
             USERNAME: ${{ secrets.DB_USER }}
             PASSWORD: ${{ secrets.DB_PASS }}
-            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+            commit: ${{ env.commit }}
+            SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
 
     deploy_sand:
       name: Deploy / Staging
@@ -39,6 +40,8 @@ jobs:
             DB_NAME: ${{ secrets.DATABASE }}
             USERNAME: ${{ secrets.DB_USER }}
             PASSWORD: ${{ secrets.DB_PASS }}
+            commit: ${{ env.commit }}
+            SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
 
     deploy_qa:
       name: Deploy / Review
@@ -55,6 +58,8 @@ jobs:
             DB_NAME: ${{ secrets.DATABASE }}
             USERNAME: ${{ secrets.DB_USER }}
             PASSWORD: ${{ secrets.DB_PASS }}
+            commit: ${{ env.commit }}
+            SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
 
     deploy_production:
         name: Deploy / Production
@@ -71,15 +76,5 @@ jobs:
               DB_NAME: ${{ secrets.DATABASE }}
               USERNAME: ${{ secrets.DB_USER }}
               PASSWORD: ${{ secrets.DB_PASS }}
-
-    # deploy_production:
-    #     name: Deploy / Production
-    #     needs: deploy_qa
-    #     # Uncomment the following line if there is a review job
-    #     # needs: [deploy_staging, deploy_review]
-    #     runs-on: ubuntu-latest
-    #     steps:
-    #     - uses: actions/checkout@v2
-    #     - name: Deploy to Production
-    #       run: |
-    #         # Your production deployment commands go here
+              commit: ${{ env.commit }}
+              SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
