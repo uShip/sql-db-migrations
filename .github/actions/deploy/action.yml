@@ -6,7 +6,7 @@ inputs:
     description: 'The target environment'
     required: true
   commit:
-    description: 'Commit SHA to check for changes #${{ inputs.commit || github.sha }}'
+    description: 'Commit SHA to check for changes'
     required: true
   SLACK_WEBHOOK_URL:
     description: 'Slack Webhook URL'
