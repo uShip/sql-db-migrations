@@ -8,7 +8,7 @@ inputs:
   commit:
     description: 'Commit SHA to check for changes'
     required: true
-  SLACK_WEBHOOK_URL:
+  SLACK_WEBHOOK:
     description: 'Slack Webhook URL'
     required: true
 
@@ -107,6 +107,6 @@ runs:
       if: always()
       env:
         SLACK_COLOR: ${{ job.status }}
-        SLACK_WEBHOOK: ${{ inputs.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK: ${{ inputs.SLACK_WEBHOOK }}
         SLACK_TITLE: DB-MIGRATION-${{ inputs.environment }}
         SLACK_MESSAGE: "A github action has been initiated. Deployment Status for the environment ${{ inputs.environment }}: ${{ job.status }}"
