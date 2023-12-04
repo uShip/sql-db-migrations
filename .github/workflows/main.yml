@@ -22,6 +22,7 @@ jobs:
             DB_NAME: ${{ secrets.DATABASE }}
             USERNAME: ${{ secrets.DB_USER }}
             PASSWORD: ${{ secrets.DB_PASS }}
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     deploy_sand:
       name: Deploy / Staging
