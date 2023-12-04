@@ -8,61 +8,61 @@ env:
 
 jobs:
   deploy_dev:
-      name: Deploy / DEV
-      uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
-      with:
-        environment: 'dev'
+    name: Deploy / DEV
+    uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
+    with:
+      environment: 'dev'
 
-  deploy_sand:
-    name: Deploy / Staging
-    needs: deploy_dev
-    runs-on: [self-hosted, uship-linux]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Common steps`
-        uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
-        with:
-          environment: 'sand'
-          DB_SERVER: ${{ secrets.DB_SERVER }}
-          DB_NAME: ${{ secrets.DATABASE }}
-          USERNAME: ${{ secrets.DB_USER }}
-          PASSWORD: ${{ secrets.DB_PASS }}
-          commit: ${{ env.commit }}
-          SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
+  # deploy_sand:
+  #   name: Deploy / Staging
+  #   needs: deploy_dev
+  #   runs-on: [self-hosted, uship-linux]
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+  #     - name: Common steps`
+  #       uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
+  #       with:
+  #         environment: 'sand'
+  #         DB_SERVER: ${{ secrets.DB_SERVER }}
+  #         DB_NAME: ${{ secrets.DATABASE }}
+  #         USERNAME: ${{ secrets.DB_USER }}
+  #         PASSWORD: ${{ secrets.DB_PASS }}
+  #         commit: ${{ env.commit }}
+  #         SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
 
-  deploy_qa:
-    name: Deploy / Review
-    needs: deploy_dev
-    runs-on: [self-hosted, uship-linux]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Common steps
-        uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
-        with:
-          environment: 'qa'
-          DB_SERVER: ${{ secrets.DB_SERVER }}
-          DB_NAME: ${{ secrets.DATABASE }}
-          USERNAME: ${{ secrets.DB_USER }}
-          PASSWORD: ${{ secrets.DB_PASS }}
-          commit: ${{ env.commit }}
-          SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
+  # deploy_qa:
+  #   name: Deploy / Review
+  #   needs: deploy_dev
+  #   runs-on: [self-hosted, uship-linux]
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+  #     - name: Common steps
+  #       uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
+  #       with:
+  #         environment: 'qa'
+  #         DB_SERVER: ${{ secrets.DB_SERVER }}
+  #         DB_NAME: ${{ secrets.DATABASE }}
+  #         USERNAME: ${{ secrets.DB_USER }}
+  #         PASSWORD: ${{ secrets.DB_PASS }}
+  #         commit: ${{ env.commit }}
+  #         SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
 
-  deploy_production:
-      name: Deploy / Production
-      needs: [deploy_sand, deploy_qa]
-      runs-on: [self-hosted, uship-linux]
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v3
-        - name: Common steps
-          uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
-          with:
-            environment: 'prod'
-            DB_SERVER: ${{ secrets.DB_SERVER }}
-            DB_NAME: ${{ secrets.DATABASE }}
-            USERNAME: ${{ secrets.DB_USER }}
-            PASSWORD: ${{ secrets.DB_PASS }}
-            commit: ${{ env.commit }}
-            SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
+  # deploy_production:
+  #     name: Deploy / Production
+  #     needs: [deploy_sand, deploy_qa]
+  #     runs-on: [self-hosted, uship-linux]
+  #     steps:
+  #       - name: Checkout code
+  #         uses: actions/checkout@v3
+  #       - name: Common steps
+  #         uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
+  #         with:
+  #           environment: 'prod'
+  #           DB_SERVER: ${{ secrets.DB_SERVER }}
+  #           DB_NAME: ${{ secrets.DATABASE }}
+  #           USERNAME: ${{ secrets.DB_USER }}
+  #           PASSWORD: ${{ secrets.DB_PASS }}
+  #           commit: ${{ env.commit }}
+  #           SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
