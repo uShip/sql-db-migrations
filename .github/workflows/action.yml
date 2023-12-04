@@ -6,6 +6,10 @@ on:
         required: true
         type: string
 
+env:
+  commit: ${{ env.commit }}
+  SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
+
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]

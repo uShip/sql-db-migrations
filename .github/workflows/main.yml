@@ -9,16 +9,9 @@ env:
 jobs:
   deploy_dev:
       name: Deploy / DEV
-      runs-on: [self-hosted, uship-linux]
-      steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Common steps
-        uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
-        with:
-          environment: 'dev'
-          commit: ${{ env.commit }}
-          SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
+      uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
+      with:
+        environment: 'dev'
 
   deploy_sand:
     name: Deploy / Staging
