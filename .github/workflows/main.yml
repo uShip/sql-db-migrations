@@ -15,11 +15,11 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
         - name: Common steps
-          uses: uShip/sql-db-migrations/.github/actions/deploy/action.yml
+          uses: uShip/sql-db-migrations/.github/workflows/action.yml
           with:
             environment: 'dev'
-            # commit: ${{ env.commit }}
-            # SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
+            commit: ${{ env.commit }}
+            SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
 
     deploy_sand:
       name: Deploy / Staging
