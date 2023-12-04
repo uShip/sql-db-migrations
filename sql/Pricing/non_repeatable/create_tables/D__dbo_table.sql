@@ -1,1 +1,1 @@
-DROP TABLE dbo.callother2
+DROP TABLE dbo.callother3
