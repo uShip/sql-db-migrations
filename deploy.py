@@ -114,7 +114,6 @@ def main(db_server, db_name, username, password, sql_files):
         for sql_file in sql_files:
             logging.info(f"Starting execution of {sql_file}")
             if sql_file.endswith(".sql"):
-                print(f"starting {sql_file}")
                 success = execute_sql_script(sql_file, crs, conn)
                 if not success:
                     error_count += 1

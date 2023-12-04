@@ -134,9 +134,10 @@ jobs:
 
     #Alert in Slack
     - name: Slack Notification
-      if: github.event.inputs.team == 'DE'
-      uses: 8398a7/action-slack@v2
-      with:
-        status: ${{ job.status }}
-        author_name: DB-MIGRATION-${{ github.event.inputs.environment }}
-        text: "A github action has been initiated by ${{ github.event.inputs.team }}. Deployment Status: ${{ github.event.inputs.environment }}"
+      if: github.event.inputs.team != 'DE'
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_COLOR: ${{ job.status }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_TITLE: DB-MIGRATION-${{ github.event.inputs.environment }}
+        SLACK_MESSAGE: "A github action has been initiated by ${{ github.event.inputs.team }}. Deployment Status: ${{ github.event.inputs.environment }}"
