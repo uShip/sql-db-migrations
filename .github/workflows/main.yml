@@ -15,7 +15,7 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
         - name: Common steps
-          uses: uShip/sql-db-migrations/.github/workflows/action.yml
+          uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
           with:
             environment: 'dev'
             commit: ${{ env.commit }}
