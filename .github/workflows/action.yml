@@ -49,7 +49,7 @@ jobs:
           echo 'export CONNECTION_STRING="$CONNECTION_STRING TrustServerCertificate=yes"' >> $GITHUB_ENV
         # shell: bash
         env:
-          CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ inputs.DB_SERVER }};Database=${{ inputs.DATABASE }};Uid=${{ inputs.DB_USER }};Pwd=${{ inputs.DB_PASS }};"
+          CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
 
         # - name: Fix SQL files
         #   run: |
@@ -89,6 +89,6 @@ jobs:
         if: always()
         env:
           SLACK_COLOR: ${{ job.status }}
-          SLACK_WEBHOOK:  ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK:  ${{ env.SLACK_WEBHOOK }}
           SLACK_TITLE: DB-MIGRATION-${{ inputs.environment }}
           SLACK_MESSAGE: "A github action has been initiated. Deployment Status for the environment ${{ inputs.environment }}: ${{ job.status }}"
