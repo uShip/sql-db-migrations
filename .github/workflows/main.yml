@@ -15,7 +15,7 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
         - name: Common steps
-          uses: ./.github/actions/common-steps
+          uses: ./.github/workflows/actions/common-steps
           with:
             environment: 'dev'
 
@@ -27,7 +27,7 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
         - name: Common steps`
-          uses: ./.github/actions/common-steps
+          uses: ./.github/workflows/actions/common-steps
           with:
             environment: 'sand'
 
@@ -39,7 +39,7 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
         - name: Common steps
-          uses: ./.github/actions/common-steps
+          uses: ./.github/workflows/actions/common-steps
           with:
             environment: 'qa'
 
@@ -51,7 +51,7 @@ jobs:
           - name: Checkout code
             uses: actions/checkout@v3
           - name: Common steps
-            uses: ./.github/actions/common-steps
+            uses: ./.github/workflows/actions/common-steps
             with:
               environment: 'prod'
 
