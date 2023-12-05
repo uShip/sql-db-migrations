@@ -5,12 +5,21 @@ on:
       environment:
         required: true
         type: string
+    secrets:
       SLACK_WEBHOOK:
         required: true
-        type: string
+      DB_SERVER:
+        required: true
+      DATABASE:
+        required: true
+      USERNAME:
+        required: true
+      PASSWORD:
+        required: true
 
 jobs:
   deploy:
+    name: Deploy to ${{ inputs.environment }}
     runs-on: [self-hosted, uship-linux]
     environment: ${{ inputs.environment }}
     steps:
