@@ -79,22 +79,23 @@ def main():
         conn_snowflake = snowflake_connection_sqlalchemy(
             snowflake_username, snowflake_keypass, snowflake_password, snowflake_account
         )
-        print("Connecting to Snowflake...")
-        conn_snowflake = snowflake_connection(
-            snowflake_username,
-            snowflake_keypass,
-            snowflake_password,
-            snowflake_account,
-            snowflake_warehouse,
-            snowflake_database,
-            snowflake_role,
-        )
-        cursor_snowflake = conn_snowflake.cursor() or conn_snowflake.connect()
+        # print("Connecting to Snowflake...")
+        # conn_snowflake = snowflake_connection(
+        #     snowflake_username,
+        #     snowflake_keypass,
+        #     snowflake_password,
+        #     snowflake_account,
+        #     snowflake_warehouse,
+        #     snowflake_database,
+        #     snowflake_role,
+        # )
+        # cursor_snowflake = conn_snowflake.cursor()
+        sf_sqlal_connection = conn_snowflake.connect()
         log_message("Connected to Snowflake")
 
         # Create a connection to MSSQL using SQLAlchemy engine
         # connection_str = f'mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no'
-        print("trying SQL engine connection with import sqlserver statement")
+        log_message("trying SQL engine connection with import sqlserver statement")
         sig_engine = connect_db_sqlaclchemy(db_server, db_name, username, password)
         log_message("succesful connection established to SQL server")
         # engine = create_engine(connection_str, echo=True, connect_args={'timeout': 90})
@@ -118,8 +119,7 @@ def main():
             # df = cursor_snowflake.fetch_pandas_all()
             df = pd.read_sql(snowflake_query, conn_snowflake)
             print(df)
-            # Close the Snowflake connection
-            conn_snowflake.close() or conn_snowflake.dispose()
+            print('Length of dataframe: ', len(df))
 
             # Fetch data from Snowflake
             # cursor_snowflake.execute(snowflake_query)
@@ -141,6 +141,8 @@ def main():
             # Close the MSSQL connection
             log_message("Reading, Writing done. Closing all connections")
             sig_engine.dispose()
+            sf_sqlal_connection.close()
+            conn_snowflake.dispose()
 
     except Exception as e:
         # Log other types of errors
