@@ -83,7 +83,7 @@ def main():
             snowflake_warehouse,
             snowflake_database,
             snowflake_role,
-            conn_engine="snowflake",
+            conn_engine='sqlacl',
         )
         cursor_snowflake = conn_snowflake.cursor() or conn_snowflake.connect()
         log_message("Connected to Snowflake")
@@ -110,9 +110,9 @@ def main():
 
             # Query to read data from Snowflake
             log_message("Getting Data from Snowflake")
-            conn_snowflake.execute(snowflake_query)
-            df = cursor_snowflake.fetch_pandas_all()
-            # df = pd.read_sql(snowflake_query, conn_snowflake)
+            # conn_snowflake.execute(snowflake_query)
+            # df = cursor_snowflake.fetch_pandas_all()
+            df = pd.read_sql(snowflake_query, conn_snowflake)
             print(df)
             # Close the Snowflake connection
             conn_snowflake.close() or conn_snowflake.dispose()

@@ -96,11 +96,11 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           SQL_FILES: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}
 
-      - name: Commit and Push Log File
-        run: |
-            git add src/deployment/execution_log.txt
-            git diff --staged --quiet || git commit -m "Updated execution log"
-            git push
+      # - name: Commit and Push Log File
+      #   run: |
+      #       git add src/deployment/execution_log.txt
+      #       git diff --staged --quiet || git commit -m "Updated execution log"
+      #       git push
 
         #Alert in Slack
       - name: Slack Notification

@@ -1,9 +1,10 @@
 name: ci-main
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch: # To manually trigger the workflow
+  # push: # Automatically trigger on push
+  #   branches:
+  #     - main
 
 env:
   commit: ${{ github.sha }}
