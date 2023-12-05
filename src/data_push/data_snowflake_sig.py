@@ -118,13 +118,7 @@ def main():
             # conn_snowflake.execute(snowflake_query)
             # df = cursor_snowflake.fetch_pandas_all()
             df = pd.read_sql(snowflake_query, conn_snowflake)
-            print(df)
             print('Length of dataframe: ', len(df))
-
-            # Fetch data from Snowflake
-            # cursor_snowflake.execute(snowflake_query)
-            # data = cursor_snowflake.fetchall()
-            # print(data)
 
             # Define target MSSQL table name
             mssql_table_name = table_mapping[snowflake_tables[i]]
@@ -132,6 +126,9 @@ def main():
             if "partners" in snowflake_tables[i]:
                 # Truncate the table in MSSQL
                 with sig_engine.connect() as conn:
+                    result = conn.execute("SELECT 1")
+                    print("Connection test successful:", result.fetchone())
+                    print('Table Name:', mssql_table_name)
                     conn.execute(f"TRUNCATE TABLE {mssql_table_name}")
 
             # Write data to MSSQL
