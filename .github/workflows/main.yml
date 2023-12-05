@@ -17,7 +17,7 @@ jobs:
       DATABASE: ${{ secrets.DATABASE }}
       USERNAME: ${{ secrets.DB_USER }}
       PASSWORD: ${{ secrets.DB_PASS }}
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy_sand:
     name: Deploy / SANDBOX

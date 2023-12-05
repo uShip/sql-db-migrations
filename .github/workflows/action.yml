@@ -102,6 +102,6 @@ jobs:
         if: always()
         env:
           SLACK_COLOR: ${{ job.status }}
-          SLACK_WEBHOOK:  ${{ inputs.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK:  ${{ secrets.SLACK_WEBHOOK }}
           SLACK_TITLE: DB-MIGRATION-${{ inputs.environment }}
           SLACK_MESSAGE: "A github action has been initiated. Deployment Status for the environment ${{ inputs.environment }}: ${{ job.status }}"
