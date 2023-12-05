@@ -144,8 +144,8 @@ def snowflake_connection(
             )
         elif conn_engine == "sqlacl":
             conn = create_engine(URL(
-                    account = snowflake_account,
                     user = snowflake_username,
+                    account = snowflake_account
                     ),
                     connect_args={
                         "private_key": pkb,
