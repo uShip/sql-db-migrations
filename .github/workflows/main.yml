@@ -12,8 +12,6 @@ jobs:
     uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
     with:
       environment: 'dev'
-    secrets:
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy_sand:
     name: Deploy / SANDBOX
