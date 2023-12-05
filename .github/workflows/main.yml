@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   workflow_dispatch: # To manually trigger the workflow
-  push: # Automatically trigger on push
-    branches:
-      - main
+  # push: # Automatically trigger on push
+  #   branches:
+  #     - main
   # pull_request: # Automatically trigger on pull request
 
 env:

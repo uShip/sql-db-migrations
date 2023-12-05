@@ -122,3 +122,4 @@ tfplan.json
 __pycache__/
 *.py[cod]
 *.pyc
+src/helpers/.ssh
