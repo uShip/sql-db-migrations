@@ -9,6 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: [self-hosted, uship-linux]
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         id: checkout
@@ -89,6 +90,6 @@ jobs:
         if: always()
         env:
           SLACK_COLOR: ${{ job.status }}
-          SLACK_WEBHOOK:  ${{ env.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK:  ${{ secrets.SLACK_WEBHOOK }}
           SLACK_TITLE: DB-MIGRATION-${{ inputs.environment }}
           SLACK_MESSAGE: "A github action has been initiated. Deployment Status for the environment ${{ inputs.environment }}: ${{ job.status }}"

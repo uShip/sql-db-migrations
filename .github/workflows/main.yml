@@ -12,16 +12,18 @@ jobs:
     uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
     with:
       environment: 'dev'
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy_sand:
-    name: Deploy / Staging
+    name: Deploy / SANDBOX
     needs: deploy_dev
     uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
     with:
       environment: 'sandbox'
 
   deploy_qa:
-    name: Deploy / Review
+    name: Deploy / QA
     needs: deploy_dev
     uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
     with:
