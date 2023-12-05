@@ -13,10 +13,10 @@ jobs:
     with:
       environment: 'dev'
     secrets:
-      DB_SERVER: ${{ secrets.DB_SERVER }}
-      DATABASE: ${{ secrets.DATABASE }}
-      USERNAME: ${{ secrets.DB_USER }}
-      PASSWORD: ${{ secrets.DB_PASS }}
+      DB_SERVER: ${{ secrets.DEV_DB_SERVER }}
+      DATABASE: ${{ secrets.DEV_DATABASE }}
+      USERNAME: ${{ secrets.DEV_DB_USER }}
+      PASSWORD: ${{ secrets.DEV_DB_PASS }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy_sand:
@@ -26,10 +26,10 @@ jobs:
     with:
       environment: 'sandbox'
     secrets:
-      DB_SERVER: ${{ secrets.DB_SERVER }}
-      DATABASE: ${{ secrets.DATABASE }}
-      USERNAME: ${{ secrets.DB_USER }}
-      PASSWORD: ${{ secrets.DB_PASS }}
+      DB_SERVER: ${{ secrets.SAND_DB_SERVER }}
+      DATABASE: ${{ secrets.SAND_DATABASE }}
+      USERNAME: ${{ secrets.SAND_DB_USER }}
+      PASSWORD: ${{ secrets.SAND_DB_PASS }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy_qa:
@@ -39,10 +39,10 @@ jobs:
     with:
       environment: 'qa'
     secrets:
-      DB_SERVER: ${{ secrets.DB_SERVER }}
-      DATABASE: ${{ secrets.DATABASE }}
-      USERNAME: ${{ secrets.DB_USER }}
-      PASSWORD: ${{ secrets.DB_PASS }}
+      DB_SERVER: ${{ secrets.QA_DB_SERVER }}
+      DATABASE: ${{ secrets.QA_DATABASE }}
+      USERNAME: ${{ secrets.QA_DB_USER }}
+      PASSWORD: ${{ secrets.QA_DB_PASS }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy_production:
@@ -52,8 +52,8 @@ jobs:
       with:
         environment: 'prod'
       secrets:
-        DB_SERVER: ${{ secrets.DB_SERVER }}
-        DATABASE: ${{ secrets.DATABASE }}
-        USERNAME: ${{ secrets.DB_USER }}
-        PASSWORD: ${{ secrets.DB_PASS }}
+        DB_SERVER: ${{ secrets.PROD_DB_SERVER }}
+        DATABASE: ${{ secrets.PROD_DATABASE }}
+        USERNAME: ${{ secrets.PROD_DB_USER }}
+        PASSWORD: ${{ secrets.PROD_DB_PASS }}
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
