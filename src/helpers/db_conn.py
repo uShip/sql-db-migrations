@@ -143,15 +143,14 @@ def snowflake_connection(
                 database=snowflake_database,
             )
         elif conn_engine == "sqlacl":
-            conn = create_engine(
-                URL(
-                    account=snowflake_account,
-                    user=snowflake_username,
-                ),
-                connect_args={
-                    "private_key": pkb,
-                },
-            )
+            conn = create_engine(URL(
+                    account = snowflake_account,
+                    user = snowflake_username,
+                    ),
+                    connect_args={
+                        "private_key": pkb,
+                    },
+                )
         else:
             raise Exception("Mention a valid connection engine")
         return conn
