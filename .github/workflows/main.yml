@@ -25,6 +25,12 @@ jobs:
     uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
     with:
       environment: 'sandbox'
+    secrets:
+      DB_SERVER: ${{ secrets.DB_SERVER }}
+      DATABASE: ${{ secrets.DATABASE }}
+      USERNAME: ${{ secrets.DB_USER }}
+      PASSWORD: ${{ secrets.DB_PASS }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy_qa:
     name: Deploy / QA
@@ -32,6 +38,12 @@ jobs:
     uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
     with:
       environment: 'qa'
+    secrets:
+      DB_SERVER: ${{ secrets.DB_SERVER }}
+      DATABASE: ${{ secrets.DATABASE }}
+      USERNAME: ${{ secrets.DB_USER }}
+      PASSWORD: ${{ secrets.DB_PASS }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy_production:
       name: Deploy / Production
@@ -39,3 +51,9 @@ jobs:
       uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
       with:
         environment: 'prod'
+      secrets:
+        DB_SERVER: ${{ secrets.DB_SERVER }}
+        DATABASE: ${{ secrets.DATABASE }}
+        USERNAME: ${{ secrets.DB_USER }}
+        PASSWORD: ${{ secrets.DB_PASS }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
