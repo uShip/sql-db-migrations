@@ -124,7 +124,9 @@ def main():
             mssql_table_name = table_mapping[snowflake_tables[i]]
             print("Table Name:", mssql_table_name)
 
-            if "partners" in snowflake_tables[i]:
+            if "partners" in mssql_table_name:
+                print("The substring 'partners' is found in the table name.")
+                print('Calling sig engine connection')
                 # Truncate the table in MSSQL
                 with sig_engine.connect() as conn:
                     result = conn.execute("SELECT 1")
