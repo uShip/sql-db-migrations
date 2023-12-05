@@ -24,7 +24,7 @@ def log_execution_status(file_path, status):
         file_path (str): The path of the SQL file.
         status (str): The execution status ('Success' or 'Error').
     """
-    with open("execution_log.txt", "a") as log_file:
+    with open("src/deployment/execution_log.txt", "a") as log_file:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_file.write(f"{timestamp} - {file_path} - {status}\n")
 

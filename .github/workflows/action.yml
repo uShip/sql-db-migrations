@@ -62,7 +62,7 @@ jobs:
           echo 'export CONNECTION_STRING="$CONNECTION_STRING TrustServerCertificate=yes"' >> $GITHUB_ENV
         # shell: bash
         env:
-          CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.DB_USER }};Pwd=${{ secrets.DB_PASS }};"
+          CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.USERNAME }};Pwd=${{ secrets.PASSWORD }};"
 
         # - name: Fix SQL files
         #   run: |
@@ -92,9 +92,15 @@ jobs:
         env:
           DB_SERVER: ${{ secrets.DB_SERVER }}
           DB_NAME: ${{ secrets.DATABASE }}
-          USERNAME: ${{ secrets.DB_USER }}
-          PASSWORD: ${{ secrets.DB_PASS }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
           SQL_FILES: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}
+
+      - name: Commit and Push Log File
+        run: |
+            git add src/deployment/execution_log.txt
+            git diff --staged --quiet || git commit -m "Updated execution log"
+            git push
 
         #Alert in Slack
       - name: Slack Notification
