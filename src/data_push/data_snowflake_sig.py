@@ -83,14 +83,15 @@ def main():
             snowflake_warehouse,
             snowflake_database,
             snowflake_role,
+            conn_engine='sqlacl',
         )
-        cursor_snowflake = conn_snowflake.cursor()
+        cursor_snowflake = conn_snowflake.cursor() or conn_snowflake.connect()
         log_message("Connected to Snowflake")
 
         # Create a connection to MSSQL using SQLAlchemy engine
         # connection_str = f'mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no'
         print("trying SQL engine connection with import sqlserver statement")
-        engine = connect_db_sqlaclchemy(db_server, db_name, username, password)
+        sig_engine = connect_db_sqlaclchemy(db_server, db_name, username, password)
         log_message("succesful connection established to SQL server")
         # engine = create_engine(connection_str, echo=True, connect_args={'timeout': 90})
 
@@ -109,11 +110,12 @@ def main():
 
             # Query to read data from Snowflake
             log_message("Getting Data from Snowflake")
-            conn_snowflake.execute(snowflake_query)
-            df = cursor_snowflake.fetch_pandas_all()
-            # df = pd.read_sql(snowflake_query, conn_snowflake)
+            # conn_snowflake.execute(snowflake_query)
+            # df = cursor_snowflake.fetch_pandas_all()
+            df = pd.read_sql(snowflake_query, conn_snowflake)
+            print(df)
             # Close the Snowflake connection
-            conn_snowflake.close()
+            conn_snowflake.close() or conn_snowflake.dispose()
 
             # Fetch data from Snowflake
             # cursor_snowflake.execute(snowflake_query)
@@ -125,16 +127,16 @@ def main():
 
             if "partners" in snowflake_tables[i]:
                 # Truncate the table in MSSQL
-                with engine.connect() as conn:
+                with sig_engine.connect() as conn:
                     conn.execute(f"TRUNCATE TABLE {mssql_table_name}")
 
             # Write data to MSSQL
             log_message("Writing Data to SQL Server")
-            df.to_sql(mssql_table_name, con=engine, if_exists="append", index=False)
+            df.to_sql(mssql_table_name, con=sig_engine, if_exists="append", index=False)
 
             # Close the MSSQL connection
             log_message("Reading, Writing done. Closing all connections")
-            engine.dispose()
+            sig_engine.dispose()
 
     except Exception as e:
         # Log other types of errors

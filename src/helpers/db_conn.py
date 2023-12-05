@@ -101,6 +101,7 @@ def snowflake_connection(
     snowflake_warehouse,
     snowflake_database,
     snowflake_role,
+    conn_engine
 ):
     """
     Establishes a connection to Snowflake and returns the connection object.
@@ -132,14 +133,26 @@ def snowflake_connection(
     )
 
     try:
-        conn = connect(
-            user=snowflake_username,
-            private_key=pkb,
-            account=snowflake_account,
-            role=snowflake_role,
-            warehouse=snowflake_warehouse,
-            database=snowflake_database,
-        )
+        if conn_engine == 'snowflake':
+            conn = connect(
+                user=snowflake_username,
+                private_key=pkb,
+                account=snowflake_account,
+                role=snowflake_role,
+                warehouse=snowflake_warehouse,
+                database=snowflake_database,
+            )
+        elif conn_engine == 'sqlacl':
+            conn = create_engine(URL(
+                        account=snowflake_account,
+                        user=snowflake_username,
+                        ),
+                        connect_args={
+                            'private_key': pkb,
+                            },
+                    )
+        else:
+            raise Exception('Mention a valid connection engine')
         return conn
     except Exception as e:
         logger.error(f"Failed to write to Snowflake: {e}")
