@@ -4,7 +4,6 @@ on:
 
 env:
   commit: ${{ github.sha }}
-  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
   deploy_dev:
@@ -12,6 +11,7 @@ jobs:
     uses: uShip/sql-db-migrations/.github/workflows/action.yml@main
     with:
       environment: 'dev'
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy_sand:
     name: Deploy / SANDBOX
