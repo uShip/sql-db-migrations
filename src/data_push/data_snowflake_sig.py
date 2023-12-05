@@ -83,7 +83,7 @@ def main():
             snowflake_warehouse,
             snowflake_database,
             snowflake_role,
-            conn_engine='sqlacl',
+            conn_engine="sqlacl",
         )
         cursor_snowflake = conn_snowflake.cursor() or conn_snowflake.connect()
         log_message("Connected to Snowflake")

@@ -6,7 +6,10 @@ from datetime import datetime
 import logging
 
 # Setting up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 
 def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection:
     """
