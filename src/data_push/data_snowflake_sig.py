@@ -11,6 +11,7 @@ from db_conn import (
     snowflake_connection,
     log_message,
     connect_db_sqlaclchemy,
+    snowflake_connection_sqlalchemy
 )
 
 # from src.helpers.db_conn import connect_db, DestroyDBConnections, snowflake_connection
@@ -74,7 +75,11 @@ def main():
         }
 
         # Establish connection to Snowflake and SQL Server
-        print("Connecting to Snowflake")
+        print("Connecting to Snowflake with sqlalchemy...")
+        conn_snowflake = snowflake_connection_sqlalchemy(
+            snowflake_username, snowflake_keypass, snowflake_password, snowflake_account
+        )
+        print("Connecting to Snowflake...")
         conn_snowflake = snowflake_connection(
             snowflake_username,
             snowflake_keypass,
@@ -83,7 +88,6 @@ def main():
             snowflake_warehouse,
             snowflake_database,
             snowflake_role,
-            conn_engine='sqlacl',
         )
         cursor_snowflake = conn_snowflake.cursor() or conn_snowflake.connect()
         log_message("Connected to Snowflake")
