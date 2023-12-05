@@ -122,6 +122,7 @@ def main():
 
             # Define target MSSQL table name
             mssql_table_name = table_mapping[snowflake_tables[i]]
+            print("Table Name:", mssql_table_name)
 
             if "partners" in snowflake_tables[i]:
                 # Truncate the table in MSSQL
