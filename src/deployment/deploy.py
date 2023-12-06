@@ -30,6 +30,7 @@ def log_execution_status(file_path, status):
     """
     with open("src/deployment/execution_log.txt", "a") as log_file:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        logger.info(f"{timestamp} - {file_path} - {status}")
         log_file.write(f"{timestamp} - {file_path} - {status}\n")
 
 
