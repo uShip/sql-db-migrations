@@ -143,7 +143,6 @@ def main():
                         # Execute the statement
                         trun_result = conn.execute(text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]"))
                         logger.info("Execution successful: %s",  trun_result)
-                        logger.info("Execution successful.")
                     except SQLAlchemyError as e:
                         logger.info(f"An error occurred: {e}")
 
