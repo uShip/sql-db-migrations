@@ -3,6 +3,8 @@ import os
 import sys
 import pandas as pd
 from sqlalchemy import create_engine
+import coloredlogs
+import logging
 
 sys.path.append("src/helpers")
 from db_conn import (
@@ -18,7 +20,8 @@ from snowflake_conn import (
 )
 
 # from src.helpers.db_conn import connect_db, DestroyDBConnections, snowflake_connection
-
+logger = logging.getLogger(__name__)
+coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
 
 def insert_data_into_mssql(connection, cursor, table_name, columns, data):
     """

@@ -33,44 +33,6 @@ def log_execution_status(file_path, status):
         log_file.write(f"{timestamp} - {file_path} - {status}\n")
 
 
-def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection:
-    """
-    Connect to database
-
-    Parameters:
-        host_server (str) = the host server name or IP address.
-        dbName (str) = the database name.
-        userName (str) = the username of login .
-        userPassword (str) = the user password for login.
-
-    Returns:
-        conn, crs = the key-value pair of the database conncection.
-    """
-
-    logging.info("Establishing mssql database connection")
-    CONNECTION_STRING: str = "DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=no"
-    connection_str = CONNECTION_STRING.format(
-        server=host_server, database=dbName, username=userName, password=userPassword
-    )
-
-    logging.info("Trying to connect to Database")
-    try:
-        conn = pyodbc.connect(connection_str, timeout=90)
-        crs = conn.cursor()
-        logging.info("Connected to Database")
-        return conn, crs
-    except (pyodbc.Error, pyodbc.OperationalError) as e:
-        logging.error("Failed to connect to the Database: {}".format(e))
-        raise Exception("Database connection timed out or failed") from e
-
-
-def DestroyDBConnections(conn, crs):
-    if "Connection" in str(type(conn)) and "Cursor" in str(type(crs)):
-        crs.close()
-        conn.close()
-        log_message("Closing the connection.")
-
-
 def find_sql_files(start_path):
     """Recursively find all .sql files in the given directory."""
     return glob.glob(start_path + "/**/*.sql", recursive=True)
