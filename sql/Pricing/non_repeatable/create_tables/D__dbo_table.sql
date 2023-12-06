@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS dbo.callother13x
+DROP TABLE IF EXISTS dbo.callother13
