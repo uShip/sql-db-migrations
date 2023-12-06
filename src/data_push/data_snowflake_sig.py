@@ -134,14 +134,15 @@ def main():
                 print("The substring 'partners' is found in the table name.")
                 # Truncate the table in MSSQL
                 with sig_engine.connect() as conn:
-                    result = conn.execute("SELECT 1")
+                    result = conn.execute(text("SELECT 1"))
                     logger.info("Connection test successful: %s",  result.fetchone())
                     sql_statement = text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]")
                     logger.info('sql_statement: %s', sql_statement)
                     # Execute the statement
                     try:
                         # Execute the statement
-                        conn.execute(sql_statement)
+                        trun_result = conn.execute(text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]"))
+                        logger.info("Execution successful: %s",  trun_result)
                         logger.info("Execution successful.")
                     except SQLAlchemyError as e:
                         logger.info(f"An error occurred: {e}")

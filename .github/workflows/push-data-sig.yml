@@ -14,6 +14,8 @@ on:
           - sandbox
         required: true
         default: 'devPricing'
+  # schedule:
+  #   - cron: '0 12 * * 3' # Runs every Wednesday at 12:00 PM UTC
 
 env:
   snowflake_username: ${{ secrets.SNOWFLAKE_USERNAME }}
