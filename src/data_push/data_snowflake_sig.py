@@ -108,7 +108,7 @@ def main():
         for i in range(0, len(snowflake_tables)):
             # Snowflake query
             if "fuelprices" in snowflake_tables[i].lower():
-                logger.info('Getting data from the snowflake table: ', snowflake_tables[i])
+                logger.info('Getting data from the snowflake table: %s', snowflake_tables[i])
                 snowflake_query = f"SELECT \
                                         DATE as date, \
                                         MAX(CASE WHEN TYPE = 'Total Gasoline' THEN PPG ELSE NULL END) AS gas, \
@@ -117,7 +117,7 @@ def main():
                                     WHERE DATE > DATEADD(DAY, -7, GETDATE()) \
                                     GROUP BY DATE;"
             else:
-                logger.info('Getting data from the snowflake table (not fuelprices): ', snowflake_tables[i])
+                logger.info('Getting data from the snowflake table (not fuelprices): %s',  snowflake_tables[i])
                 snowflake_query = f"SELECT * FROM {snowflake_tables[i]}"
 
             # Query to read data from Snowflake
@@ -134,7 +134,7 @@ def main():
                 # Truncate the table in MSSQL
                 with sig_engine.connect() as conn:
                     result = conn.execute("SELECT 1")
-                    logger.info("Connection test successful:", result.fetchone())
+                    logger.info("Connection test successful: %s",  result.fetchone())
                     conn.execute(f"TRUNCATE TABLE {mssql_table_name}")
 
             # Write data to MSSQL
