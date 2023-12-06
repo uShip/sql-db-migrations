@@ -77,8 +77,8 @@ def main():
 
     try:
         table_mapping = {
-            "DATAMART.SRA.FUELPRICES": "dbo.fuelprices",
-            "DATAMART.SRA.USHIPCOMMERCE_PARTNERS": "dbo.ushipcommerce_partners",
+            "DATAMART.SRA.FUELPRICES": "fuelprices",
+            "DATAMART.SRA.USHIPCOMMERCE_PARTNERS": "ushipcommerce_partners",
         }
 
         # Establish connection to Snowflake and SQL Server
@@ -110,9 +110,9 @@ def main():
             if "fuelprices" in snowflake_tables[i].lower():
                 logger.info('Getting data from the snowflake table: ', snowflake_tables[i])
                 snowflake_query = f"SELECT \
-                                        DATE as 'date', \
-                                        MAX(CASE WHEN TYPE = 'Total Gasoline' THEN PPG ELSE NULL END) AS 'gas', \
-                                        MAX(CASE WHEN TYPE = 'No 2 Diesel' THEN PPG ELSE NULL END) AS 'diesel' \
+                                        DATE as date, \
+                                        MAX(CASE WHEN TYPE = 'Total Gasoline' THEN PPG ELSE NULL END) AS gas, \
+                                        MAX(CASE WHEN TYPE = 'No 2 Diesel' THEN PPG ELSE NULL END) AS diesel \
                                     FROM {snowflake_tables[i]} \
                                     WHERE DATE > DATEADD(DAY, -7, GETDATE()) \
                                     GROUP BY DATE;"
@@ -139,7 +139,7 @@ def main():
 
             # Write data to MSSQL
             logger.info("Writing Data to SQL Server")
-            df.to_sql(mssql_table_name, con=sig_engine, if_exists="append", index=False)
+            df.to_sql(mssql_table_name, schema="dbo", con=sig_engine, if_exists="append", index=False)
 
             # Close the MSSQL connection
             logger.info("Reading, Writing done. Closing all connections")
