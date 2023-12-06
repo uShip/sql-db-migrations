@@ -1,5 +1,0 @@
-# pyodbc
-requests
-sqlfluff
-coloredlogs
-sqlalchemy

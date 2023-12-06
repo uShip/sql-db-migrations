@@ -4,27 +4,21 @@ import pyodbc
 import glob
 from datetime import datetime
 import logging
+import coloredlogs
 
-sys.path.append("./src/helpers")
+sys.path.append("src/helpers")
 from db_conn import (
     connect_db,
     DestroyDBConnections,
-    snowflake_connection,
     log_message,
-    connect_db_sqlaclchemy,
-    snowflake_connection_sqlalchemy
 )
 
 # Setting up logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-
-
-def log_message(message, *args):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"{timestamp} - {message}")
-
+logger = logging.getLogger(__name__)
+coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
 
 def log_execution_status(file_path, status):
     """

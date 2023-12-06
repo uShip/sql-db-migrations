@@ -66,7 +66,7 @@ jobs:
     - name: Install Requirements and Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r src/deployment/requirements.txt
 
     - name: Install pyodbc on the server
       run: |
@@ -115,7 +115,7 @@ jobs:
           echo "List all the SQL files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
           echo "Deploying functions..."
           # Run Python script
-          python deploy.py
+          python src/deployment/deploy.py
         else
           echo "No SQL files have changed. Skipping deployment."
         fi
