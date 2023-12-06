@@ -131,7 +131,6 @@ def main():
                 with sig_engine.connect() as conn:
                     result = conn.execute("SELECT 1")
                     print("Connection test successful:", result.fetchone())
-                    print('Table Name:', mssql_table_name)
                     conn.execute(f"TRUNCATE TABLE {mssql_table_name}")
 
             # Write data to MSSQL

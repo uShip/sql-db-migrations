@@ -102,6 +102,9 @@ jobs:
       #       git diff --staged --quiet || git commit -m "Updated execution log"
       #       git push
 
+      - name: Get user email
+        run: echo "User email is ${{ github.event.sender.email }}"
+
         #Alert in Slack
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
