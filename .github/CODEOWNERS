@@ -4,3 +4,5 @@
 # @uShip/SRE
 @uShip/dba
 @uship/data-engineering
+
+*       @uShip/dba @uship/data-engineering
