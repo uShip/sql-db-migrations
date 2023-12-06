@@ -84,7 +84,7 @@ jobs:
           echo "List all the SQL files that have changed: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}"
           echo "Deploying functions..."
           # Run Python script
-          python src/deployment/deploy.py > captured_logs.txt
+          python src/deployment/deploy.py
           else
           echo "No SQL files have changed. Skipping deployment."
           fi
@@ -96,23 +96,35 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           SQL_FILES: ${{ steps.changed-files-specific.outputs.all_changed_and_modified_files }}
 
-      - name: Extract Specific Log Lines
-        run: grep "Executed script" captured_logs.txt > execution_log.txt
+      # - name: Extract Specific Log Lines
+      #   run: grep "Executed script" captured_logs.txt > execution_log.txt
 
-        # Choose either to upload as an artifact or commit to the repo
-      - name: Upload Log File
-        uses: actions/upload-artifact@v2
+      #   # Choose either to upload as an artifact or commit to the repo
+      # - name: Upload Log File
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: execution-logs
+      #     path: execution_log.txt
+
+      - name: Commit files
+        id: commit
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "github-actions"
+          git add --all
+          if [-z "$(git status --porcelain)"]; then
+              echo "::set-output name=push::false"
+          else
+              git commit -m "Add changes" -a
+              echo "::set-output name=push::true"
+          fi
+        shell: bash
+
+      - name: Push changes
+        if: steps.commit.outputs.push == 'true'
+        uses: ad-m/github-push-action@master
         with:
-          name: execution-logs
-          path: execution_log.txt
-
-      # - name: Commit and Push Log File
-      #   run: |
-      #     git config --global user.name 'Your Name'
-      #     git config --global user.email 'your-email@example.com'
-      #     git add execution_log.txt
-      #     git commit -m "Add execution logs"
-      #     git push
+            github_token: ${{ secrets.GITHUB_TOKEN }}
 
         #Alert in Slack
       - name: Slack Notification
