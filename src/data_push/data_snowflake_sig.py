@@ -3,7 +3,7 @@ import os
 os.environ['SQLALCHEMY_WARN_20'] = '1'
 import sys
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import coloredlogs
 import logging
 
@@ -86,6 +86,8 @@ def main():
         conn_snowflake = snowflake_connection_sqlalchemy(
             snowflake_username, snowflake_keypass, snowflake_password, snowflake_account
         )
+        sf_sqlal_connection = conn_snowflake.connect()
+        logger.info("Connected to Snowflake")
         # print("Connecting to Snowflake...")
         # conn_snowflake = snowflake_connection(
         #     snowflake_username,
@@ -97,8 +99,6 @@ def main():
         #     snowflake_role,
         # )
         # cursor_snowflake = conn_snowflake.cursor()
-        sf_sqlal_connection = conn_snowflake.connect()
-        logger.info("Connected to Snowflake")
 
         # Create a connection to MSSQL using SQLAlchemy engine
         logger.info("trying SQL engine connection with import sqlserver statement")
@@ -135,17 +135,19 @@ def main():
                 with sig_engine.connect() as conn:
                     result = conn.execute("SELECT 1")
                     logger.info("Connection test successful: %s",  result.fetchone())
-                    conn.execute(f"TRUNCATE TABLE {mssql_table_name}")
+                    sql_statement = text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]")
+                    # Execute the statement
+                    conn.execute(sql_statement)
 
             # Write data to MSSQL
             logger.info("Writing Data to SQL Server")
             df.to_sql(mssql_table_name, schema="dbo", con=sig_engine, if_exists="append", index=False)
 
-            # Close the MSSQL connection
-            logger.info("Reading, Writing done. Closing all connections")
-            sig_engine.dispose()
-            sf_sqlal_connection.close()
-            conn_snowflake.dispose()
+        # Close the MSSQL connection
+        logger.info("Reading, Writing done. Closing all connections")
+        sig_engine.dispose()
+        sf_sqlal_connection.close()
+        conn_snowflake.dispose()
 
     except Exception as e:
         # Log other types of errors
