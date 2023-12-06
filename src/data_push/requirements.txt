@@ -1,6 +1,6 @@
 snowflake-connector-python>=2.7.7
 snowflake-sqlalchemy
-sqlalchemy
+sqlalchemy<2.0
 fastparquet==2023.8.0
 pyarrow==14.0.1
 snowflake-snowpark-python==1.10.0
