@@ -4,6 +4,7 @@ os.environ['SQLALCHEMY_WARN_20'] = '1'
 import sys
 import pandas as pd
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
 import coloredlogs
 import logging
 
@@ -67,7 +68,7 @@ def main():
 
     # Check if today is Wednesday (Wednesday corresponds to 2 in the weekday() function, where Monday is 0 and Sunday is 6)
     if current_date.weekday() == 2:
-        print("Today is Wednesday!")
+        logger.info("Today is Wednesday!")
         snowflake_tables = [
             "DATAMART.SRA.FUELPRICES",
             "DATAMART.SRA.USHIPCOMMERCE_PARTNERS",
@@ -136,8 +137,14 @@ def main():
                     result = conn.execute("SELECT 1")
                     logger.info("Connection test successful: %s",  result.fetchone())
                     sql_statement = text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]")
+                    logger.info('sql_statement: %s', sql_statement)
                     # Execute the statement
-                    conn.execute(sql_statement)
+                    try:
+                        # Execute the statement
+                        conn.execute(sql_statement)
+                        logger.info("Execution successful.")
+                    except SQLAlchemyError as e:
+                        logger.info(f"An error occurred: {e}")
 
             # Write data to MSSQL
             logger.info("Writing Data to SQL Server")
