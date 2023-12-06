@@ -9,22 +9,13 @@ sys.path.append("./src/helpers")
 from db_conn import (
     connect_db,
     DestroyDBConnections,
-    snowflake_connection,
     log_message,
-    connect_db_sqlaclchemy,
-    snowflake_connection_sqlalchemy
 )
 
 # Setting up logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-
-
-def log_message(message, *args):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"{timestamp} - {message}")
-
 
 def log_execution_status(file_path, status):
     """

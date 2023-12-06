@@ -8,9 +8,12 @@ sys.path.append("src/helpers")
 from db_conn import (
     connect_db,
     DestroyDBConnections,
-    snowflake_connection,
-    log_message,
     connect_db_sqlaclchemy,
+    log_message,
+)
+
+from snowflake_conn import (
+    snowflake_connection,
     snowflake_connection_sqlalchemy
 )
 
