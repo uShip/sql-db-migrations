@@ -131,7 +131,7 @@ def main():
             print("Table Name:", mssql_table_name)
 
             if "ushipcommerce_partners" in mssql_table_name:
-                print("The substring 'partners' is found in the table name.")
+                # print("The substring 'partners' is found in the table name.")
                 # Truncate the table in MSSQL
                 with sig_engine.connect() as conn:
                     result = conn.execute(text("SELECT 1"))
@@ -141,7 +141,7 @@ def main():
                     # Execute the statement
                     try:
                         # Execute the statement
-                        trun_result = conn.execute(text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]"))
+                        trun_result = conn.execution_options(autocommit=True).execute(text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]"))
                         logger.info("Execution successful: %s",  trun_result)
                     except SQLAlchemyError as e:
                         logger.info(f"An error occurred: {e}")
