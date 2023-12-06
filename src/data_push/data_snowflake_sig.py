@@ -110,7 +110,7 @@ def main():
             if "fuelprices" in snowflake_tables[i].lower():
                 logger.info('Getting data from the snowflake table: ', snowflake_tables[i])
                 snowflake_query = f"SELECT \
-                                        DATE as 'date, \
+                                        DATE as 'date', \
                                         MAX(CASE WHEN TYPE = 'Total Gasoline' THEN PPG ELSE NULL END) AS 'gas', \
                                         MAX(CASE WHEN TYPE = 'No 2 Diesel' THEN PPG ELSE NULL END) AS 'diesel' \
                                     FROM {snowflake_tables[i]} \
