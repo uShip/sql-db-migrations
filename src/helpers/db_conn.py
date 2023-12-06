@@ -30,13 +30,13 @@ def connect_db(host_server, dbName, userName, userPassword) -> pyodbc.Connection
         conn, crs = the key-value pair of the database conncection.
     """
 
-    log_message("Establishing mssql database connection")
+    logger.info("Establishing mssql database connection")
     CONNECTION_STRING: str = "DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=no"
     connection_str = CONNECTION_STRING.format(
         server=host_server, database=dbName, username=userName, password=userPassword
     )
 
-    log_message("Trying to connect to Database")
+    logger.info("Trying to connect to Database")
     try:
         conn = pyodbc.connect(connection_str, timeout=90)
         crs = conn.cursor()
@@ -70,20 +70,20 @@ def connect_db_sqlaclchemy(
         conn, crs = the key-value pair of the database conncection.
     """
 
-    log_message("Establishing mssql database connection")
+    logger.info("Establishing mssql database connection")
     CONNECTION_STRING: str = "DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=no"
     connection_str = CONNECTION_STRING.format(
         server=host_server, database=dbName, username=userName, password=userPassword
     )
 
-    log_message("Trying to connect to Database")
+    logger.info("Trying to connect to Database")
     try:
         connection_url = URL.create(
             "mssql+pyodbc", query={"odbc_connect": connection_str}
         )
         engine = create_engine(connection_url)
-        log_message("Connected to Database")
+        logger.info("Connected to Database")
         return engine
     except (pyodbc.Error, pyodbc.OperationalError) as e:
-        log_message("Failed to connect to the Database: {}".format(e))
+        logger.info("Failed to connect to the Database: {}".format(e))
         raise Exception("Database connection timed out or failed") from e

@@ -97,18 +97,19 @@ def main():
         # )
         # cursor_snowflake = conn_snowflake.cursor()
         sf_sqlal_connection = conn_snowflake.connect()
-        log_message("Connected to Snowflake")
+        logger.info("Connected to Snowflake")
 
         # Create a connection to MSSQL using SQLAlchemy engine
         # connection_str = f'mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no'
         log_message("trying SQL engine connection with import sqlserver statement")
         sig_engine = connect_db_sqlaclchemy(db_server, db_name, username, password)
-        log_message("succesful connection established to SQL server")
+        logger.info("succesful connection established to SQL server")
         # engine = create_engine(connection_str, echo=True, connect_args={'timeout': 90})
 
         for i in range(0, len(snowflake_tables)):
             # Snowflake query
             if "fuelprices" in snowflake_tables[i]:
+                print('Getting data from the snowflake table: ', snowflake_tables[i])
                 snowflake_query = f"SELECT \
                                         DATE, \
                                         MAX(CASE WHEN TYPE = 'Total Gasoline' THEN PPG ELSE NULL END) AS gas, \
@@ -117,10 +118,11 @@ def main():
                                     WHERE DATE > DATEADD(DAY, -7, GETDATE()) \
                                     GROUP BY DATE;"
             else:
+                print('Getting data from the snowflake table not fueklprices: ', snowflake_tables[i])
                 snowflake_query = f"SELECT * FROM {snowflake_tables[i]}"
 
             # Query to read data from Snowflake
-            log_message("Getting Data from Snowflake")
+            logger.info("Getting Data from Snowflake")
             # conn_snowflake.execute(snowflake_query)
             # df = cursor_snowflake.fetch_pandas_all()
             df = pd.read_sql(snowflake_query, conn_snowflake)
@@ -140,18 +142,18 @@ def main():
                     conn.execute(f"TRUNCATE TABLE {mssql_table_name}")
 
             # Write data to MSSQL
-            log_message("Writing Data to SQL Server")
+            logger.info("Writing Data to SQL Server")
             df.to_sql(mssql_table_name, con=sig_engine, if_exists="append", index=False)
 
             # Close the MSSQL connection
-            log_message("Reading, Writing done. Closing all connections")
+            logger.info("Reading, Writing done. Closing all connections")
             sig_engine.dispose()
             sf_sqlal_connection.close()
             conn_snowflake.dispose()
 
     except Exception as e:
         # Log other types of errors
-        log_message(f"Error occurred: {e}")
+        logger.info(f"Error occurred: {e}")
         raise Exception("A new error occurred") from e
 
 
