@@ -4,6 +4,7 @@ import pyodbc
 import glob
 from datetime import datetime
 import logging
+import coloredlogs
 
 sys.path.append("./src/helpers")
 from db_conn import (
@@ -16,6 +17,8 @@ from db_conn import (
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
+logger = logging.getLogger(__name__)
+coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
 
 def log_execution_status(file_path, status):
     """
