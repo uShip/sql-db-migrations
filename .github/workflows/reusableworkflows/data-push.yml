@@ -1,0 +1,80 @@
+name: Deployment Steps
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      SLACK_WEBHOOK:
+        required: true
+      DB_SERVER:
+        required: true
+      DATABASE:
+        required: true
+      USERNAME:
+        required: true
+      PASSWORD:
+        required: true
+
+jobs:
+  deploy:
+    name: ${{ inputs.environment }} Deployment
+    runs-on: [self-hosted, uship-linux]
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetches all history for all branches and tags
+
+      - name: Set up Python 3.10.6
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.10.6
+
+      - name: Install Requirements, Dependencies and Pyodbc
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/deployment/requirements.txt
+          sudo dpkg --configure -a && true
+          python src/extract_pyodbc.py | bash
+          pip install pyodbc
+        env:
+          DISTRO: "Ubuntu"
+          REMOVE_EXITS: 'true'
+          DOCS_URL: "https://raw.githubusercontent.com/MicrosoftDocs/sql-docs/live/docs/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server.md"
+          ODBC_VERSION: 18
+        # shell: bash
+
+      # Modify/Configure OpenSSL, ODBC connection String
+      - name: Modify/Configure OpenSSL, ODBC connection String
+        run: |
+          sudo chmod +rwx /etc/ssl/openssl.cnf
+          sudo sed -i 's/TLSv1.2/TLSv1/g' /etc/ssl/openssl.cnf
+          sudo sed -i 's/SECLEVEL=2/SECLEVEL=0/g' /etc/ssl/openssl.cnf
+          echo '[system_default_sect]\nMinProtocol = TLSv1.0\nCipherString = DEFAULT@SECLEVEL=0' | sudo tee -a /etc/ssl/openssl.cnf
+          echo 'export CONNECTION_STRING="$CONNECTION_STRING TrustServerCertificate=yes"' >> $GITHUB_ENV
+        # shell: bash
+        env:
+          CONNECTION_STRING: "Driver={ODBC Driver 18 for SQL Server};Server=${{ secrets.DB_SERVER }};Database=${{ secrets.DATABASE }};Uid=${{ secrets.USERNAME }};Pwd=${{ secrets.PASSWORD }};"
+
+      - name: Upload data from Snowflake to DB
+        id: data-upload
+        run: python src/data_push/data_snowflake_sig.py
+        env:
+            DB_SERVER: ${{ secrets.DB_SERVER }}
+            DB_NAME: ${{ secrets.DATABASE }}
+            USERNAME: ${{ secrets.DB_USER }}
+            PASSWORD: ${{ secrets.DB_PASS }}
+
+        #Alert in Slack
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        if: failure()
+        env:
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_WEBHOOK:  ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: DB-MIGRATION-${{ inputs.environment }}
+          SLACK_MESSAGE: "A daily job of uploading to SIG from snowflake failed. Deployment Status for the environment ${{ inputs.environment }}: ${{ job.status }}"

@@ -1,0 +1,68 @@
+name: SIG-Data-Push
+
+on:
+  schedule:
+    - cron: '0 12 * * 3' # Runs every Wednesday at 12:00 PM UTC
+
+jobs:
+    trigger-deployment-workflow:
+        runs-on: [self-hosted, uship-linux]
+        steps:
+            - name: Dispatch Deployment Event
+              uses: peter-evans/repository-dispatch@v1
+              with:
+                token: ${{ secrets.ADMIN_PAT }}
+                repository: ${{ github.repository }}
+                event-type: deploy-event
+                client-payload: '{"environment": "dev"}'
+
+    data_push_dev:
+        name: DATA-PUSH / DEV
+        uses: uShip/sql-db-migrations/.github/workflows/reusableworkflows/data-push.yml@main
+        with:
+            environment: 'dev'
+        secrets:
+            DB_SERVER: ${{ secrets.DEV_DB_SERVER }}
+            DATABASE: ${{ secrets.DEV_DATABASE }}
+            USERNAME: ${{ secrets.DEV_DB_USER }}
+            PASSWORD: ${{ secrets.DEV_DB_PASS }}
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    data_push_sand:
+        name: DATA-PUSH / SANDBOX
+        needs: data_push_dev
+        uses: uShip/sql-db-migrations/.github/workflows/reusableworkflows/data-push.yml@main
+        with:
+            environment: 'sandbox'
+        secrets:
+            DB_SERVER: ${{ secrets.SAND_DB_SERVER }}
+            DATABASE: ${{ secrets.SAND_DATABASE }}
+            USERNAME: ${{ secrets.SAND_DB_USER }}
+            PASSWORD: ${{ secrets.SAND_DB_PASS }}
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    data_push_qa:
+        name: DATA-PUSH / QA
+        needs: data_push_dev
+        uses: uShip/sql-db-migrations/.github/workflows/reusableworkflows/data-push.yml@main
+        with:
+            environment: 'qa'
+        secrets:
+            DB_SERVER: ${{ secrets.QA_DB_SERVER }}
+            DATABASE: ${{ secrets.QA_DATABASE }}
+            USERNAME: ${{ secrets.QA_DB_USER }}
+            PASSWORD: ${{ secrets.QA_DB_PASS }}
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    data_push_production:
+        name: DATA-PUSH / Production
+        needs: [data_push_sand, data_push_qa]
+        uses: uShip/sql-db-migrations/.github/workflows/reusableworkflows/data-push.yml@main
+        with:
+            environment: 'prod'
+        secrets:
+            DB_SERVER: ${{ secrets.PROD_DB_SERVER }}
+            DATABASE: ${{ secrets.PROD_DATABASE }}
+            USERNAME: ${{ secrets.PROD_DB_USER }}
+            PASSWORD: ${{ secrets.PROD_DB_PASS }}
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
