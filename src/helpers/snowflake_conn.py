@@ -15,6 +15,7 @@ from snowflake.connector import connect
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
 
+
 def snowflake_connection(
     snowflake_username,
     snowflake_keypass,
@@ -22,7 +23,7 @@ def snowflake_connection(
     snowflake_account,
     snowflake_warehouse,
     snowflake_database,
-    snowflake_role
+    snowflake_role,
 ):
     """
     Establishes a connection to Snowflake and returns the connection object.
@@ -73,6 +74,9 @@ def snowflake_connection_sqlalchemy(
     snowflake_keypass,
     snowflake_password,
     snowflake_account,
+    snowflake_warehouse,
+    snowflake_database,
+    snowflake_role,
 ):
     """
     Establishes a connection to Snowflake and returns the connection object.
@@ -99,7 +103,6 @@ def snowflake_connection_sqlalchemy(
     from cryptography.hazmat.primitives.asymmetric import dsa
     from cryptography.hazmat.primitives import serialization
 
-
     pem_data = snowflake_keypass
     p_key = serialization.load_pem_private_key(
         pem_data.encode(),
@@ -113,14 +116,18 @@ def snowflake_connection_sqlalchemy(
     )
 
     try:
-        engine = create_engine(URL(
-                    account=snowflake_account,
-                    user=snowflake_username,
-                    ),
-                    connect_args={
-                        'private_key': pkb,
-                        },
-                )
+        engine = create_engine(
+            URL(
+                account=snowflake_account,
+                user=snowflake_username,
+                role=snowflake_role,
+                warehouse=snowflake_warehouse,
+                database=snowflake_database,
+            ),
+            connect_args={
+                "private_key": pkb,
+            },
+        )
         return engine
     except Exception as e:
         logger.error(f"Failed to write to Snowflake: {e}")

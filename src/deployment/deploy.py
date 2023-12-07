@@ -20,6 +20,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
 
+
 def log_execution_status(file_path, status):
     """
     Logs the execution status of a SQL script to a file.

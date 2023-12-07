@@ -32,8 +32,9 @@ config = {
         "warehouse": os.getenv("snowflake_warehouse"),
         "database": os.getenv("snowflake_database"),
         "role": os.getenv("snowflake_role"),
-    }
+    },
 }
+
 
 # Define utility functions
 def insert_data_into_mssql(engine, table_name, data):
@@ -46,6 +47,7 @@ def insert_data_into_mssql(engine, table_name, data):
         data (DataFrame): Pandas DataFrame containing data to be inserted.
     """
     data.to_sql(table_name, schema="dbo", con=engine, if_exists="append", index=False)
+
 
 def fetch_data_from_snowflake(conn, query):
     """
@@ -60,6 +62,7 @@ def fetch_data_from_snowflake(conn, query):
     """
     return pd.read_sql(query, conn)
 
+
 def truncate_table(engine, table_name):
     """
     Truncates a table in SQL Server.
@@ -69,17 +72,27 @@ def truncate_table(engine, table_name):
         table_name (str): Name of the table to truncate.
     """
     with engine.connect() as conn:
-        conn.execution_options(autocommit=True).execute(text(f"TRUNCATE TABLE [Pricing].[dbo].[{table_name}]"))
+        conn.execution_options(autocommit=True).execute(
+            text(f"TRUNCATE TABLE [Pricing].[dbo].[{table_name}]")
+        )
+
 
 def main():
     try:
         # Establishing connections
         logger.info("Connecting to Snowflake with sqlalchemy...")
-        conn_snowflake = snowflake_connection_sqlalchemy(**config["snowflake"]).connect()
+        conn_snowflake = snowflake_connection_sqlalchemy(
+            **config["snowflake"]
+        ).connect()
         logger.info("Connected to Snowflake")
 
         logger.info("Connecting to SQL Server with sqlalchemy...")
-        sig_engine = connect_db_sqlalchemy(config["db_server"], config["db_name"], config["username"], config["password"])
+        sig_engine = connect_db_sqlalchemy(
+            config["db_server"],
+            config["db_name"],
+            config["username"],
+            config["password"],
+        )
         logger.info("Connected to SQL Server")
 
         # Business logic here...
@@ -96,6 +109,7 @@ def main():
             conn_snowflake.close()
         if sig_engine:
             sig_engine.dispose()
+
 
 if __name__ == "__main__":
     main()
