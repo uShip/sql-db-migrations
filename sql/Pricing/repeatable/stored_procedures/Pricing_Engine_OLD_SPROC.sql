@@ -1,7 +1,7 @@
 
 /****** Object:  StoredProcedure [IHD].[Pricing_Engine_Proc]    Script Date: 11/17/2023 3:56:22 PM ******/
 
-CREATE OR ALTER proc [dbo].[Pricing_Engine_Proc_NEW_v2] as
+CREATE OR ALTER proc [dbo].[Pricing_Engine_Proc_v1] as
 
 /*****************************************************************************************************************/
 
