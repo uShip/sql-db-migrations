@@ -12,7 +12,7 @@ sys.path.append("src/helpers")
 from db_conn import (
     connect_db,
     DestroyDBConnections,
-    connect_db_sqlaclchemy,
+    connect_db_sqlalchemy,
     log_message,
 )
 
@@ -103,7 +103,7 @@ def main():
 
         # Create a connection to MSSQL using SQLAlchemy engine
         logger.info("trying SQL engine connection with import sqlserver statement")
-        sig_engine = connect_db_sqlaclchemy(db_server, db_name, username, password)
+        sig_engine = connect_db_sqlalchemy(db_server, db_name, username, password)
         logger.info("succesful connection established to SQL server")
 
         for i in range(0, len(snowflake_tables)):

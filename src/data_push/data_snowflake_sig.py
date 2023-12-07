@@ -10,10 +10,17 @@ import coloredlogs
 
 
 sys.path.append("src/helpers")
+from db_conn import (
+    connect_db,
+    DestroyDBConnections,
+    connect_db_sqlalchemy,
+    log_message,
+)
 
-# Importing custom modules
-from db_conn import connect_db_sqlalchemy
-from snowflake_conn import snowflake_connection_sqlalchemy
+from snowflake_conn import (
+    snowflake_connection,
+    snowflake_connection_sqlalchemy
+)
 
 # from src.helpers.db_conn import connect_db, DestroyDBConnections, snowflake_connection
 logger = logging.getLogger(__name__)

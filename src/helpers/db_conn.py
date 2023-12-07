@@ -54,7 +54,7 @@ def DestroyDBConnections(conn, crs):
         log_message("Closing the connection.")
 
 
-def connect_db_sqlaclchemy(
+def connect_db_sqlalchemy(
     host_server, dbName, userName, userPassword
 ) -> pyodbc.Connection:
     """
