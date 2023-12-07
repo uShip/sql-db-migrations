@@ -1,27 +1,41 @@
-from datetime import datetime
 import os
 import sys
+
+os.environ["SQLALCHEMY_WARN_20"] = "1"
 import pandas as pd
-from sqlalchemy import create_engine
-import coloredlogs
+from datetime import datetime
+from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
 import logging
+import coloredlogs
+
 
 sys.path.append("src/helpers")
-from db_conn import (
-    connect_db,
-    DestroyDBConnections,
-    connect_db_sqlaclchemy,
-    log_message,
-)
+from db_conn import connect_db_sqlalchemy
 
-from snowflake_conn import (
-    snowflake_connection,
-    snowflake_connection_sqlalchemy
-)
+from snowflake_conn import snowflake_connection_sqlalchemy
 
 # from src.helpers.db_conn import connect_db, DestroyDBConnections, snowflake_connection
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
+
+# Configuration Management
+config = {
+    "db_server": os.getenv("DB_SERVER"),
+    "db_name": os.getenv("DB_NAME"),
+    "username": os.getenv("USERNAME"),
+    "password": os.getenv("PASSWORD"),
+    "snowflake": {
+        "snowflake_username": os.getenv("snowflake_username"),
+        "snowflake_keypass": os.getenv("snowflake_keypassword"),
+        "snowflake_password": os.getenv("snowflake_password"),
+        "snowflake_account": os.getenv("snowflake_accountname"),
+        "snowflake_warehouse": os.getenv("snowflake_warehouse"),
+        "snowflake_database": os.getenv("snowflake_database"),
+        "snowflake_role": os.getenv("snowflake_role"),
+    },
+}
+
 
 def insert_data_into_mssql(connection, cursor, table_name, columns, data):
     """
@@ -46,27 +60,17 @@ def insert_data_into_mssql(connection, cursor, table_name, columns, data):
 
 
 def main():
-    # SQL connection parameters
-    db_server = os.getenv("DB_SERVER")
-    db_name = os.getenv("DB_NAME")
-    username = os.getenv("USERNAME")
-    password = os.getenv("PASSWORD")
-
-    # Snowflake connection parameters
-    snowflake_username = os.environ["snowflake_username"]
-    snowflake_keypass = os.environ["snowflake_keypassword"]
-    snowflake_password = os.environ["snowflake_password"]
-    snowflake_account = os.environ["snowflake_accountname"]
-    snowflake_warehouse = os.environ["snowflake_warehouse"]
-    snowflake_database = os.environ["snowflake_database"]
-    snowflake_role = os.environ["snowflake_role"]
-
     # Get the current date
     current_date = datetime.now()
 
+    table_mapping = {
+        "DATAMART.SRA.FUELPRICES": "fuelprices",
+        "DATAMART.SRA.USHIPCOMMERCE_PARTNERS": "ushipcommerce_partners",
+    }
+
     # Check if today is Wednesday (Wednesday corresponds to 2 in the weekday() function, where Monday is 0 and Sunday is 6)
     if current_date.weekday() == 2:
-        print("Today is Wednesday!")
+        logger.info("Today is Wednesday! Time for FuelPrices")
         snowflake_tables = [
             "DATAMART.SRA.FUELPRICES",
             "DATAMART.SRA.USHIPCOMMERCE_PARTNERS",
@@ -75,86 +79,97 @@ def main():
         snowflake_tables = ["DATAMART.SRA.USHIPCOMMERCE_PARTNERS"]
 
     try:
-        table_mapping = {
-            "DATAMART.SRA.FUELPRICES": "dbo.fuelprices",
-            "DATAMART.SRA.USHIPCOMMERCE_PARTNERS": "dbo.ushipcommerce_partners",
-        }
-
-        # Establish connection to Snowflake and SQL Server
-        print("Connecting to Snowflake with sqlalchemy...")
-        conn_snowflake = snowflake_connection_sqlalchemy(
-            snowflake_username, snowflake_keypass, snowflake_password, snowflake_account
-        )
-        # print("Connecting to Snowflake...")
-        # conn_snowflake = snowflake_connection(
-        #     snowflake_username,
-        #     snowflake_keypass,
-        #     snowflake_password,
-        #     snowflake_account,
-        #     snowflake_warehouse,
-        #     snowflake_database,
-        #     snowflake_role,
-        # )
-        # cursor_snowflake = conn_snowflake.cursor()
+        # Establishing connections
+        logger.info("Connecting to Snowflake with sqlalchemy...")
+        conn_snowflake = snowflake_connection_sqlalchemy(**config["snowflake"])
         sf_sqlal_connection = conn_snowflake.connect()
         logger.info("Connected to Snowflake")
 
-        # Create a connection to MSSQL using SQLAlchemy engine
-        # connection_str = f'mssql+pyodbc://{username}:{password}@{db_server}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no'
-        log_message("trying SQL engine connection with import sqlserver statement")
-        sig_engine = connect_db_sqlaclchemy(db_server, db_name, username, password)
-        logger.info("succesful connection established to SQL server")
-        # engine = create_engine(connection_str, echo=True, connect_args={'timeout': 90})
+        logger.info("Connecting to SQL Server with sqlalchemy...")
+        sig_engine = connect_db_sqlalchemy(
+            config["db_server"],
+            config["db_name"],
+            config["username"],
+            config["password"],
+        )
+        logger.info("Connected to SQL Server")
 
         for i in range(0, len(snowflake_tables)):
             # Snowflake query
-            if "fuelprices" in snowflake_tables[i]:
-                print('Getting data from the snowflake table: ', snowflake_tables[i])
+            if "fuelprices" in snowflake_tables[i].lower():
+                logger.info(
+                    "Getting data from the snowflake table: %s", snowflake_tables[i]
+                )
                 snowflake_query = f"SELECT \
-                                        DATE, \
+                                        DATE as date, \
                                         MAX(CASE WHEN TYPE = 'Total Gasoline' THEN PPG ELSE NULL END) AS gas, \
                                         MAX(CASE WHEN TYPE = 'No 2 Diesel' THEN PPG ELSE NULL END) AS diesel \
                                     FROM {snowflake_tables[i]} \
                                     WHERE DATE > DATEADD(DAY, -7, GETDATE()) \
                                     GROUP BY DATE;"
             else:
-                print('Getting data from the snowflake table not fueklprices: ', snowflake_tables[i])
+                logger.info(
+                    "Getting data from the snowflake table (not fuelprices): %s",
+                    snowflake_tables[i],
+                )
                 snowflake_query = f"SELECT * FROM {snowflake_tables[i]}"
 
             # Query to read data from Snowflake
             logger.info("Getting Data from Snowflake")
-            # conn_snowflake.execute(snowflake_query)
-            # df = cursor_snowflake.fetch_pandas_all()
             df = pd.read_sql(snowflake_query, conn_snowflake)
-            print('Length of dataframe: ', len(df))
+            print("Length of dataframe: ", len(df))
 
             # Define target MSSQL table name
             mssql_table_name = table_mapping[snowflake_tables[i]]
             print("Table Name:", mssql_table_name)
 
             if "ushipcommerce_partners" in mssql_table_name:
-                print("The substring 'partners' is found in the table name.")
-                print('Calling sig engine connection')
+                # print("The substring 'partners' is found in the table name.")
                 # Truncate the table in MSSQL
                 with sig_engine.connect() as conn:
-                    result = conn.execute("SELECT 1")
-                    print("Connection test successful:", result.fetchone())
-                    conn.execute(f"TRUNCATE TABLE {mssql_table_name}")
+                    result = conn.execute(text("SELECT 1"))
+                    logger.info("Connection test successful: %s", result.fetchone())
+                    sql_statement = text(
+                        f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]"
+                    )
+                    logger.info("sql_statement: %s", sql_statement)
+                    # Execute the statement
+                    try:
+                        # Execute the statement
+                        trun_result = conn.execution_options(autocommit=True).execute(
+                            text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]")
+                        )
+                        logger.info("Execution successful: %s", trun_result)
+                    except SQLAlchemyError as e:
+                        logger.info(f"An error occurred: {e}")
 
             # Write data to MSSQL
             logger.info("Writing Data to SQL Server")
-            df.to_sql(mssql_table_name, con=sig_engine, if_exists="append", index=False)
+            df.to_sql(
+                mssql_table_name,
+                schema="dbo",
+                con=sig_engine,
+                if_exists="append",
+                index=False,
+            )
 
-            # Close the MSSQL connection
-            logger.info("Reading, Writing done. Closing all connections")
-            sig_engine.dispose()
+        # Close the MSSQL connection
+        logger.info("Reading, Writing done. Closing all connections")
+
+    except SQLAlchemyError as e:
+        logger.error(f"Database error occurred: {e}")
+        raise Exception("A new error occurred") from e
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")
+        raise Exception("A new error occurred") from e
+    finally:
+        # Clean up and close connections
+        logger.info("Closing database connections...")
+        if sf_sqlal_connection:
             sf_sqlal_connection.close()
             conn_snowflake.dispose()
-
-    except Exception as e:
-        # Log other types of errors
-        logger.info(f"Error occurred: {e}")
-        raise Exception("A new error occurred") from e
+        if sig_engine:
+            sig_engine.dispose()
 
 
 if __name__ == "__main__":
