@@ -1,40 +1,29 @@
-import os
-import sys
-os.environ['SQLALCHEMY_WARN_20'] = '1'
-import pandas as pd
 from datetime import datetime
+import os
+os.environ['SQLALCHEMY_WARN_20'] = '1'
+import sys
+import pandas as pd
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
-import logging
 import coloredlogs
-
+import logging
 
 sys.path.append("src/helpers")
+from db_conn import (
+    connect_db,
+    DestroyDBConnections,
+    connect_db_sqlaclchemy,
+    log_message,
+)
 
-# Importing custom modules
-from db_conn import connect_db_sqlalchemy
-from snowflake_conn import snowflake_connection_sqlalchemy
+from snowflake_conn import (
+    snowflake_connection,
+    snowflake_connection_sqlalchemy
+)
 
 # from src.helpers.db_conn import connect_db, DestroyDBConnections, snowflake_connection
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
-
-# Configuration Management
-config = {
-    "db_server": os.getenv("DB_SERVER"),
-    "db_name": os.getenv("DB_NAME"),
-    "username": os.getenv("USERNAME"),
-    "password": os.getenv("PASSWORD"),
-    "snowflake": {
-        "username": os.getenv("snowflake_username"),
-        "keypass": os.getenv("snowflake_keypassword"),
-        "password": os.getenv("snowflake_password"),
-        "account": os.getenv("snowflake_accountname"),
-        "warehouse": os.getenv("snowflake_warehouse"),
-        "database": os.getenv("snowflake_database"),
-        "role": os.getenv("snowflake_role"),
-    }
-}
 
 def insert_data_into_mssql(connection, cursor, table_name, columns, data):
     """
@@ -59,18 +48,27 @@ def insert_data_into_mssql(connection, cursor, table_name, columns, data):
 
 
 def main():
+    # SQL connection parameters
+    db_server = os.getenv("DB_SERVER")
+    db_name = os.getenv("DB_NAME")
+    username = os.getenv("USERNAME")
+    password = os.getenv("PASSWORD")
+
+    # Snowflake connection parameters
+    snowflake_username = os.environ["snowflake_username"]
+    snowflake_keypass = os.environ["snowflake_keypassword"]
+    snowflake_password = os.environ["snowflake_password"]
+    snowflake_account = os.environ["snowflake_accountname"]
+    snowflake_warehouse = os.environ["snowflake_warehouse"]
+    snowflake_database = os.environ["snowflake_database"]
+    snowflake_role = os.environ["snowflake_role"]
 
     # Get the current date
     current_date = datetime.now()
 
-    table_mapping = {
-            "DATAMART.SRA.FUELPRICES": "fuelprices",
-            "DATAMART.SRA.USHIPCOMMERCE_PARTNERS": "ushipcommerce_partners",
-        }
-
     # Check if today is Wednesday (Wednesday corresponds to 2 in the weekday() function, where Monday is 0 and Sunday is 6)
     if current_date.weekday() == 2:
-        logger.info("Today is Wednesday! Time for FuelPrices")
+        logger.info("Today is Wednesday!")
         snowflake_tables = [
             "DATAMART.SRA.FUELPRICES",
             "DATAMART.SRA.USHIPCOMMERCE_PARTNERS",
@@ -79,15 +77,34 @@ def main():
         snowflake_tables = ["DATAMART.SRA.USHIPCOMMERCE_PARTNERS"]
 
     try:
-        # Establishing connections
+        table_mapping = {
+            "DATAMART.SRA.FUELPRICES": "fuelprices",
+            "DATAMART.SRA.USHIPCOMMERCE_PARTNERS": "ushipcommerce_partners",
+        }
+
+        # Establish connection to Snowflake and SQL Server
         logger.info("Connecting to Snowflake with sqlalchemy...")
-        conn_snowflake = snowflake_connection_sqlalchemy(**config["snowflake"])
+        conn_snowflake = snowflake_connection_sqlalchemy(
+            snowflake_username, snowflake_keypass, snowflake_password, snowflake_account
+        )
         sf_sqlal_connection = conn_snowflake.connect()
         logger.info("Connected to Snowflake")
+        # print("Connecting to Snowflake...")
+        # conn_snowflake = snowflake_connection(
+        #     snowflake_username,
+        #     snowflake_keypass,
+        #     snowflake_password,
+        #     snowflake_account,
+        #     snowflake_warehouse,
+        #     snowflake_database,
+        #     snowflake_role,
+        # )
+        # cursor_snowflake = conn_snowflake.cursor()
 
-        logger.info("Connecting to SQL Server with sqlalchemy...")
-        sig_engine = connect_db_sqlalchemy(config["db_server"], config["db_name"], config["username"], config["password"])
-        logger.info("Connected to SQL Server")
+        # Create a connection to MSSQL using SQLAlchemy engine
+        logger.info("trying SQL engine connection with import sqlserver statement")
+        sig_engine = connect_db_sqlaclchemy(db_server, db_name, username, password)
+        logger.info("succesful connection established to SQL server")
 
         for i in range(0, len(snowflake_tables)):
             # Snowflake query
@@ -135,21 +152,14 @@ def main():
 
         # Close the MSSQL connection
         logger.info("Reading, Writing done. Closing all connections")
+        sig_engine.dispose()
+        sf_sqlal_connection.close()
+        conn_snowflake.dispose()
 
-    except SQLAlchemyError as e:
-        logger.error(f"Database error occurred: {e}")
-        raise Exception("A new error occurred") from e
     except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+        # Log other types of errors
+        logger.info(f"Error occurred: {e}")
         raise Exception("A new error occurred") from e
-    finally:
-        # Clean up and close connections
-        logger.info("Closing database connections...")
-        if sf_sqlal_connection:
-            sf_sqlal_connection.close()
-            conn_snowflake.dispose()
-        if sig_engine:
-            sig_engine.dispose()
 
 
 if __name__ == "__main__":
