@@ -1,5 +1,6 @@
 import os
 import sys
+from dotenv import load_dotenv
 os.environ["SQLALCHEMY_WARN_20"] = "1"
 import pandas as pd
 from datetime import datetime
@@ -7,6 +8,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 import logging
 import coloredlogs
+import json
 
 sys.path.append("src/helpers")
 from db_conn import connect_db_sqlalchemy
@@ -16,9 +18,12 @@ from snowflake_conn import snowflake_connection_sqlalchemy
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
 
+sig_config_str = os.getenv('SIG_CONFIG')
+sig_config = json.loads(sig_config_str)
+
 # Configuration Management
 config = {
-    "sig_config": os.getenv("sig_config"),
+    "sig_config": json.loads(os.getenv("sig_config")),
     "snowflake": {
         "snowflake_username": os.getenv("snowflake_username"),
         "snowflake_keypass": os.getenv("snowflake_keypassword"),
@@ -30,6 +35,7 @@ config = {
     },
 }
 
+print(config)
 def connection_string(host_server, dbName, userName, userPassword):
     # Construct the connection string using string formatting
     modified_connection_string = f"Driver={{ODBC Driver 18 for SQL Server}};Server={host_server};Database={dbName};Uid={userName};Pwd={userPassword};TrustServerCertificate=yes"

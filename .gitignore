@@ -123,3 +123,4 @@ __pycache__/
 *.py[cod]
 *.pyc
 src/helpers/.ssh
+src/data_push/test_config.py
