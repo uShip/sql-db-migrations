@@ -15,7 +15,7 @@ This repository outlines the DataOps pipeline for managing SQL changes and deplo
 
 #### Branch Creation:
 
-* Create a new branch with the following format: ```JIRA_ticket_number-brief_descriptive_title```. Example: ```SQL-1043-update-column```.
+* Create a new branch with the following format: `JIRA_ticket_number-brief_descriptive_title`. Example: `SQL-1043-update-column`.
 * Make your changes to the relevant SQL files.
 
 #### SQL File Location:
