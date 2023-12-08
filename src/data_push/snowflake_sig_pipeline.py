@@ -1,6 +1,5 @@
 import os
 import sys
-from dotenv import load_dotenv
 os.environ["SQLALCHEMY_WARN_20"] = "1"
 import pandas as pd
 from datetime import datetime
