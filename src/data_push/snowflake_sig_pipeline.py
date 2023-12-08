@@ -17,7 +17,7 @@ from snowflake_conn import snowflake_connection_sqlalchemy
 logger = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG", logger=logger, isatty=True)
 
-sig_config_str = os.getenv('SIG_CONFIG')
+sig_config_str = os.getenv("sig_config")
 sig_config = json.loads(sig_config_str)
 
 # Configuration Management
