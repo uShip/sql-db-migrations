@@ -1,4 +1,4 @@
-name: Snowflake-SIG
+name: Snowflake-SIG-ENV
 
 on:
   workflow_dispatch:

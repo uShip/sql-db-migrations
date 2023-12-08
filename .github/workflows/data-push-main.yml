@@ -1,4 +1,4 @@
-name: Snowflake-SIG
+name: Snowflake-SIG-ALLENV
 
 on:
   workflow_dispatch:
