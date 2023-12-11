@@ -6,3 +6,4 @@ pyarrow==14.0.1
 snowflake-snowpark-python==1.10.0
 utils==1.0.1
 coloredlogs
+icecream
