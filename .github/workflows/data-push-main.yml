@@ -2,7 +2,8 @@ name: Snowflake-SIG-ALLENV
 
 on:
   workflow_dispatch:
-
+  schedule:
+    - cron: '0 12 * * 3'
 
 env:
   snowflake_username: ${{ secrets.SNOWFLAKE_USERNAME }}
