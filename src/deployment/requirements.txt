@@ -3,3 +3,4 @@ requests
 sqlfluff
 coloredlogs
 sqlalchemy
+icecream

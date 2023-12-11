@@ -71,7 +71,7 @@ def connect_db_sqlalchemy(
     """
 
     logger.info("Establishing mssql database connection")
-    CONNECTION_STRING: str = "DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=no;Trusted_Connection=yes"
+    CONNECTION_STRING: str = "DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};Encrypt=no;"#Trusted_Connection=yes"
     connection_str = CONNECTION_STRING.format(server=host_server, database=dbName, username=userName, password=userPassword)
 
     logger.info("Trying to connect to Database")

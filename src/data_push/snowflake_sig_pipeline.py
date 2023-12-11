@@ -8,6 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 import logging
 import coloredlogs
 import json
+from icecream import ic
 
 sys.path.append("src/helpers")
 from db_conn import connect_db_sqlalchemy
@@ -121,7 +122,7 @@ def main():
                     logger.info(f"Connected to SQL Server for environment: {env}")
                     for table in snowflake_tables:
                         logger.info(f"Linking data for the table: {table}")
-                        process_table_data(conn_snowflake, table, table_mapping, sig_engine)
+                        ic(process_table_data(conn_snowflake, table, table_mapping, sig_engine))
                 except Exception as e:
                     logger.error(f"Failed to connect to SQL Server for environment {env}: {e}")
                     continue
