@@ -59,31 +59,30 @@ def build_snowflake_query(table):
         return f"SELECT * FROM {table}"
 
 # Data Insertion Function
-def insert_data_into_mssql(conn, table_name, data):
-    data.to_sql(table_name, schema="dbo", con=conn, if_exists="append", index=False)
+def insert_data_into_mssql(engine_conn, table_name, data):
+    data.to_sql(table_name, schema="dbo", con=engine_conn, if_exists="append", index=False)
 
-def process_table_data(sf_connection, table, mapping, environments, connections, env):
+def process_table_data(sf_connection, table, mapping, engine):
     query = build_snowflake_query(table)
     df = pd.read_sql(query, sf_connection)
     print("Length of dataframe: ", len(df))
     logger.info(f"Data retrieved from {table}, processing...")
 
     mssql_table_name = mapping[table]
-    for env in environments:
-        logger.info('Processing data for environment: %s', env)
-        if "ushipcommerce_partners" in mssql_table_name:
-            with connections[f'sig_engine_{env}'].connect() as conn:
-                result = conn.execute(text("SELECT 1"))
-                logger.info("Connection test successful: %s", result.fetchone())
-                try:
-                    # Execute the statement
-                    trun_result = conn.execution_options(autocommit=True).execute(
-                        text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]")
-                    )
-                    logger.info("Execution successful: %s", trun_result)
-                except SQLAlchemyError as e:
-                    logger.info(f"An error occurred: {e}")
-        insert_data_into_mssql(connections[f'sig_engine_{env}'], mssql_table_name, df)
+    logger.info('Uploading data for table: %s', mssql_table_name)
+    if "ushipcommerce_partners" in mssql_table_name:
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT 1"))
+            logger.info("Connection test successful: %s", result.fetchone())
+            try:
+                # Execute the statement
+                trun_result = conn.execution_options(autocommit=True).execute(
+                    text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]")
+                )
+                logger.info("Execution successful: %s", trun_result)
+            except SQLAlchemyError as e:
+                logger.info(f"An error occurred: {e}")
+    insert_data_into_mssql(engine, mssql_table_name, df)
     logger.info(f"Data inserted into {mssql_table_name} in all environments.")
 
 def close_connections(connections):
@@ -118,14 +117,13 @@ def main():
 
             for env in environments:
                 try:
-                    connections[f'sig_engine_{env}'] = connect_db_sqlalchemy(**config["sig_config"][env])
+                    sig_engine = connect_db_sqlalchemy(**config["sig_config"][env])
                     logger.info(f"Connected to SQL Server for environment: {env}")
+                    for table in snowflake_tables:
+                        process_table_data(conn_snowflake, table, table_mapping, environments, sig_engine, env)
                 except Exception as e:
                     logger.error(f"Failed to connect to SQL Server for environment {env}: {e}")
                     continue
-
-            for table in snowflake_tables:
-                process_table_data(conn_snowflake, table, table_mapping, environments, connections, env)
 
     except SQLAlchemyError as e:
         logger.error(f"Database error occurred: {e}")
