@@ -120,7 +120,8 @@ def main():
                     sig_engine = connect_db_sqlalchemy(**config["sig_config"][env])
                     logger.info(f"Connected to SQL Server for environment: {env}")
                     for table in snowflake_tables:
-                        process_table_data(conn_snowflake, table, table_mapping, environments, sig_engine, env)
+                        logger.info(f"Linking data for the table: {table}")
+                        process_table_data(conn_snowflake, table, table_mapping, sig_engine)
                 except Exception as e:
                     logger.error(f"Failed to connect to SQL Server for environment {env}: {e}")
                     continue
