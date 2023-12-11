@@ -80,8 +80,8 @@ def process_table_data(sf_connection, table, mapping, engine):
                     text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]")
                 )
                 logger.info("Execution successful: %s", trun_result)
-            except error as e:
-    #             logger.info(f"An error occurred: {e}")
+            except Exception as e:
+                logger.info(f"An error occurred: {e}")
     insert_data_into_mssql(engine, mssql_table_name, df)
     logger.info(f"Data inserted into {mssql_table_name} in all environments.")
 
