@@ -35,7 +35,6 @@ config = {
     },
 }
 
-print(config)
 def connection_string(host_server, dbName, userName, userPassword):
     # Construct the connection string using string formatting
     modified_connection_string = f"Driver={{ODBC Driver 18 for SQL Server}};Server={host_server};Database={dbName};Uid={userName};Pwd={userPassword};TrustServerCertificate=yes"
@@ -44,7 +43,7 @@ def connection_string(host_server, dbName, userName, userPassword):
     os.environ['CONNECTION_STRING'] = modified_connection_string
 
     # Optionally, print the connection string (for debugging purposes, remove in production)
-    print(os.environ['CONNECTION_STRING'])
+    # print(os.environ['CONNECTION_STRING'])
 
 
 def build_snowflake_query(table):
@@ -71,17 +70,17 @@ def process_table_data(sf_connection, table, mapping, engine):
 
     mssql_table_name = mapping[table]
     logger.info('Uploading data for table: %s', mssql_table_name)
-    # if "ushipcommerce_partners" in mssql_table_name:
-    #     with engine.connect() as conn:
-    #         result = conn.execute(text("SELECT 1"))
-    #         logger.info("Connection test successful: %s", result.fetchone())
-    #         try:
-    #             # Execute the statement
-    #             trun_result = conn.execution_options(autocommit=True).execute(
-    #                 text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]")
-    #             )
-    #             logger.info("Execution successful: %s", trun_result)
-    #         except SQLAlchemyError as e:
+    if "ushipcommerce_partners" in mssql_table_name:
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT 1"))
+            logger.info("Connection test successful: %s", result.fetchone())
+            try:
+                # Execute the statement
+                trun_result = conn.execution_options(autocommit=True).execute(
+                    text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]")
+                )
+                logger.info("Execution successful: %s", trun_result)
+            except error as e:
     #             logger.info(f"An error occurred: {e}")
     insert_data_into_mssql(engine, mssql_table_name, df)
     logger.info(f"Data inserted into {mssql_table_name} in all environments.")
@@ -122,7 +121,7 @@ def main():
                     logger.info(f"Connected to SQL Server for environment: {env}")
                     for table in snowflake_tables:
                         logger.info(f"Linking data for the table: {table}")
-                        process_table_data(conn_snowflake, table, table_mapping, sig_engine)
+                        ic(process_table_data(conn_snowflake, table, table_mapping, sig_engine))
                 except Exception as e:
                     logger.error(f"Failed to connect to SQL Server for environment {env}: {e}")
                     continue
