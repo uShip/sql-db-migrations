@@ -71,18 +71,18 @@ def process_table_data(sf_connection, table, mapping, engine):
 
     mssql_table_name = mapping[table]
     logger.info('Uploading data for table: %s', mssql_table_name)
-    if "ushipcommerce_partners" in mssql_table_name:
-        with engine.connect() as conn:
-            result = conn.execute(text("SELECT 1"))
-            logger.info("Connection test successful: %s", result.fetchone())
-            try:
-                # Execute the statement
-                trun_result = conn.execution_options(autocommit=True).execute(
-                    text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]")
-                )
-                logger.info("Execution successful: %s", trun_result)
-            except SQLAlchemyError as e:
-                logger.info(f"An error occurred: {e}")
+    # if "ushipcommerce_partners" in mssql_table_name:
+    #     with engine.connect() as conn:
+    #         result = conn.execute(text("SELECT 1"))
+    #         logger.info("Connection test successful: %s", result.fetchone())
+    #         try:
+    #             # Execute the statement
+    #             trun_result = conn.execution_options(autocommit=True).execute(
+    #                 text(f"TRUNCATE TABLE [Pricing].[dbo].[{mssql_table_name}]")
+    #             )
+    #             logger.info("Execution successful: %s", trun_result)
+    #         except SQLAlchemyError as e:
+    #             logger.info(f"An error occurred: {e}")
     insert_data_into_mssql(engine, mssql_table_name, df)
     logger.info(f"Data inserted into {mssql_table_name} in all environments.")
 
