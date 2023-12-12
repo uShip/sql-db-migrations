@@ -132,6 +132,7 @@ def main():
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
         raise
+        sys.exit(1)
     finally:
         close_connections(connections)
 
