@@ -12,7 +12,7 @@ IF
     )
     BEGIN
 
-        CREATE TABLE dbo.callother18 (
+        CREATE TABLE dbo.callother19 (
             mmdd [varchar](5) NULL,
             day_date [datetime] NULL,
             day_week [float] NULL,
